@@ -6,10 +6,15 @@
     android:orientation="vertical"
     tools:context="com.mustcsie.vrproject2.MainActivity" >
 
-    <fragment
+    <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/fragment1"
         android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" 
+        map:uiZoomControls="false"
+    	map:cameraZoom="18"
+    	map:uiScrollGestures="false"
+    	map:uiRotateGestures="false"
+    	map:uiTiltGestures="false" />
 
 </LinearLayout>

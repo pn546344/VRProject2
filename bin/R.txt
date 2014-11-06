@@ -92,8 +92,9 @@ int drawable ic_plusone_standard_off_client 0x7f02001d
 int drawable ic_plusone_tall_off_client 0x7f02001e
 int drawable powered_by_google_dark 0x7f02001f
 int drawable powered_by_google_light 0x7f020020
+int id FrameLayout1 0x7f070016
 int id LinearLayout1 0x7f070014
-int id action_settings 0x7f070016
+int id action_settings 0x7f070017
 int id book_now 0x7f070010
 int id buyButton 0x7f07000a
 int id buy_now 0x7f07000f
@@ -117,7 +118,9 @@ int id terrain 0x7f070003
 int id wrap_content 0x7f07000d
 int integer google_play_services_version 0x7f080000
 int layout activity_main 0x7f030000
+int layout activity_second 0x7f030001
 int menu main 0x7f0a0000
+int menu second 0x7f0a0001
 int string accept 0x7f050002
 int string action_settings 0x7f050025
 int string app_name 0x7f050023
@@ -155,6 +158,7 @@ int string decline 0x7f050003
 int string hello_world 0x7f050024
 int string store_picture_message 0x7f050001
 int string store_picture_title 0x7f050000
+int string title_activity_second 0x7f050026
 int string wallet_buy_button_place_holder 0x7f050022
 int style AppBaseTheme 0x7f040005
 int style AppTheme 0x7f040006

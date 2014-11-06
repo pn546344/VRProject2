@@ -409,8 +409,9 @@ containing a value of this type.
         public static final int powered_by_google_light=0x7f020020;
     }
     public static final class id {
+        public static final int FrameLayout1=0x7f070016;
         public static final int LinearLayout1=0x7f070014;
-        public static final int action_settings=0x7f070016;
+        public static final int action_settings=0x7f070017;
         public static final int book_now=0x7f070010;
         public static final int buyButton=0x7f07000a;
         public static final int buy_now=0x7f07000f;
@@ -438,9 +439,11 @@ containing a value of this type.
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
+        public static final int activity_second=0x7f030001;
     }
     public static final class menu {
         public static final int main=0x7f0a0000;
+        public static final int second=0x7f0a0001;
     }
     public static final class string {
         public static final int accept=0x7f050002;
@@ -551,6 +554,7 @@ containing a value of this type.
         public static final int hello_world=0x7f050024;
         public static final int store_picture_message=0x7f050001;
         public static final int store_picture_title=0x7f050000;
+        public static final int title_activity_second=0x7f050026;
         /**  Text on a placeholder buy button when Google Play services is not
          available or up-to-date 
          */
