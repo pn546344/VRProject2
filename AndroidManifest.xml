@@ -23,6 +23,7 @@
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -48,7 +49,8 @@
         </activity>
         <activity
             android:name=".SecondActivity"
-            android:label="@string/title_activity_second" >
+            android:label="@string/title_activity_second" 
+            android:screenOrientation="landscape" >
         </activity>
     </application>
 

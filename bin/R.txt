@@ -94,11 +94,12 @@ int drawable powered_by_google_dark 0x7f02001f
 int drawable powered_by_google_light 0x7f020020
 int id FrameLayout1 0x7f070016
 int id LinearLayout1 0x7f070014
-int id action_settings 0x7f070017
+int id action_settings 0x7f070019
 int id book_now 0x7f070010
 int id buyButton 0x7f07000a
 int id buy_now 0x7f07000f
 int id buy_with_google 0x7f07000e
+int id cameraView1 0x7f070017
 int id classic 0x7f070011
 int id fragment1 0x7f070015
 int id grayscale 0x7f070012
@@ -114,6 +115,7 @@ int id sandbox 0x7f070008
 int id satellite 0x7f070002
 int id selectionDetails 0x7f07000b
 int id strict_sandbox 0x7f070009
+int id tagView1 0x7f070018
 int id terrain 0x7f070003
 int id wrap_content 0x7f07000d
 int integer google_play_services_version 0x7f080000

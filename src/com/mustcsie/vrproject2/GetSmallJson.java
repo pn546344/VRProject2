@@ -3,37 +3,37 @@ package com.mustcsie.vrproject2;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
-public class GetBigJson extends	Thread{
-	
-	String result="",address=null;
-	String[] item,pic;
-	LinkedList<BigPoint> list = new LinkedList<BigPoint>();
-	public GetBigJson(String url) {
-		address = url;
+public class GetSmallJson extends Thread{
+
+	String result="",address=null , getData;
+	LinkedList<TagData> dataList = new LinkedList<TagData>();
+	public GetSmallJson(String url) {
+		getData = url;
+		try {
+			getData	= URLEncoder.encode(getData,"utf-8");  //解決get傳送中文的問題
+			address = "http://120.105.81.47/login/small_android.php?viewname="+getData;
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public String[] getItem() {
-		return item;
-	}
-	
-	public String[] getPic() {
-		return pic;
-	}
-	
-	public LinkedList<BigPoint> getBigJsonData(){
-		return list;
+	public LinkedList<TagData> getList() {
+		return dataList;
 	}
 	
 	@Override
@@ -53,30 +53,35 @@ public class GetBigJson extends	Thread{
 				}
 				reader.close();
 				connection.disconnect();
-				
-				
 				JSONArray jsonArray = new JSONArray(result);
-				item = new String[jsonArray.length()];
-				pic = new String[jsonArray.length()];
 				for(int i=0;i<jsonArray.length();i++)
 				{
-					BigPoint bigPoint = new BigPoint();
 					JSONObject json = jsonArray.getJSONObject(i);
-					item[i] = json.getString("View_Name");
-					pic[i] = json.getString("View_Logo");
-					bigPoint.setName(json.getString("View_Name"));
-					bigPoint.setLatitude(json.getDouble("View_Latitude"));
-					bigPoint.setLongitude(json.getDouble("View_Longitude"));
-					list.add(bigPoint);
+					String name , content;
+					double latitude,longitude;
+					Bitmap bitmap;
+					name = json.getString("Device_Name");
+					content = json.getString("Device_Content");
+					latitude = json.getDouble("Device_Latitude");
+					longitude = json.getDouble("Device_Longitude");
+					SmallBitmap sBitmap = new SmallBitmap(json.getString("Device_Images"));
+					bitmap = sBitmap.getBitmap();
+					TagData tData = new TagData(name, content, latitude, longitude, bitmap);
+					dataList.add(tData);
 				}
-			
 			}
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Log.i("ttt", "Malformed");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.i("ttt", "Unsupport");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Log.i("ttt", "Io");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

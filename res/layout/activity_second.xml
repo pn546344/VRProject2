@@ -5,4 +5,14 @@
     android:layout_height="match_parent"
     tools:context="com.mustcsie.vrproject2.SecondActivity" >
 
+    <com.mustcsie.vrproject2.CameraView
+        android:id="@+id/cameraView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.mustcsie.vrproject2.TagView
+        android:id="@+id/tagView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </FrameLayout>

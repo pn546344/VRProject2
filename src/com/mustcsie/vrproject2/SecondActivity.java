@@ -1,34 +1,48 @@
 package com.mustcsie.vrproject2;
 
+import java.util.LinkedList;
+
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 
 public class SecondActivity extends Activity {
-
+	String bigPoint;
+	CameraView cView;
+	TagView tView;
+	LinkedList<TagData> dataList = new LinkedList<TagData>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(
+        		WindowManager.LayoutParams.FLAG_FULLSCREEN,                  
+        		WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_second);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.second, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+		cView = (CameraView)findViewById(R.id.cameraView1);
+		tView = (TagView)findViewById(R.id.tagView1);
+		tView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+		tView.setZOrderOnTop(true);
+		Intent intent = getIntent();
+		bigPoint = intent.getStringExtra("BigPoint");
+		Log.i("fff", "bigPoint ="+bigPoint);
+		GetSmallJson sJson = new GetSmallJson(bigPoint);
+		sJson.start();
+		try {
+			sJson.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return super.onOptionsItemSelected(item);
+		dataList = sJson.getList();
+		Log.i("fff", "dataList ="+dataList.size());
 	}
+
+
 }

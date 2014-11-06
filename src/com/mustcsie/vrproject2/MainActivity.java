@@ -18,6 +18,7 @@ import com.google.android.gms.maps.MapFragment;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -109,6 +110,9 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 	@Override
 	public boolean onMarkerClick(Marker arg0) {
 		// TODO Auto-generated method stub
+		Intent intent = new Intent(this,SecondActivity.class);
+		intent.putExtra("BigPoint", arg0.getTitle());
+		startActivity(intent);
 		return false;
 	}
 }

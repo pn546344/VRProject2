@@ -411,11 +411,12 @@ containing a value of this type.
     public static final class id {
         public static final int FrameLayout1=0x7f070016;
         public static final int LinearLayout1=0x7f070014;
-        public static final int action_settings=0x7f070017;
+        public static final int action_settings=0x7f070019;
         public static final int book_now=0x7f070010;
         public static final int buyButton=0x7f07000a;
         public static final int buy_now=0x7f07000f;
         public static final int buy_with_google=0x7f07000e;
+        public static final int cameraView1=0x7f070017;
         public static final int classic=0x7f070011;
         public static final int fragment1=0x7f070015;
         public static final int grayscale=0x7f070012;
@@ -431,6 +432,7 @@ containing a value of this type.
         public static final int satellite=0x7f070002;
         public static final int selectionDetails=0x7f07000b;
         public static final int strict_sandbox=0x7f070009;
+        public static final int tagView1=0x7f070018;
         public static final int terrain=0x7f070003;
         public static final int wrap_content=0x7f07000d;
     }
