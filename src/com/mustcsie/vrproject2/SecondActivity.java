@@ -30,8 +30,7 @@ public class SecondActivity extends Activity {
 		tView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
 		tView.setZOrderOnTop(true);
 		Intent intent = getIntent();
-		bigPoint = intent.getStringExtra("BigPoint");
-		Log.i("fff", "bigPoint ="+bigPoint);
+		bigPoint = intent.getStringExtra("BigPoint");  //取得大項的名稱
 		GetSmallJson sJson = new GetSmallJson(bigPoint);
 		sJson.start();
 		try {
@@ -42,7 +41,17 @@ public class SecondActivity extends Activity {
 		}
 		dataList = sJson.getList();
 		Log.i("fff", "dataList ="+dataList.size());
+		tView.resume();
 	}
-
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		tView.destory();
+		tView = null;
+		finish();
+		super.onDestroy();
+		
+	}
 
 }

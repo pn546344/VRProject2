@@ -52,7 +52,6 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 		map=frag.getMap();
 		map.setMyLocationEnabled(true);
 		map.setOnMyLocationChangeListener(this);
-		
 	}
 	
 	@Override

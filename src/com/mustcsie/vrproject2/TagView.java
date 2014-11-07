@@ -1,6 +1,14 @@
 package com.mustcsie.vrproject2;
 
+import java.util.LinkedList;
+
+import com.google.android.gms.internal.ho;
+
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -33,6 +41,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private boolean loopStop = false;
 	private SensorManager sm;
 	private float currentDegree = 0f;  //電子羅盤角度變數
+	private LinkedList<TagData> dataList;
+	private Canvas canvas;
 	
 	public TagView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -74,9 +84,13 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		t.start();
 	}
 	
+	protected void destory() {
+		loopStop = true;
+	}
+	
 	protected void pause() {
 		loopStop = true;
-		while (true) {
+		while (!loopStop) {
 			try {
 				t.join();
 			} catch (InterruptedException e) {
@@ -86,10 +100,28 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		}
 	}
 	
+	public void setTagDataList(LinkedList<TagData> dataList) {
+		this.dataList = dataList;
+	}
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		while(true)
+		{
+			
+			if(!holder.getSurface().isValid())
+				continue;
+				
+		canvas = holder.lockCanvas();
+//		canvas.drawColor(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR); //重製畫面使tagview維持透明
+//		canvas.drawARGB(255, 255, 255, 0);
+		Bitmap bit = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+		canvas.drawBitmap(bit, 0, 0,null);
+		//Log.i("canvas", "YES3");
+
+		holder.unlockCanvasAndPost(canvas);
+		}
 	}
 	@Override
 	public void onLocationChanged(Location location) {
@@ -133,17 +165,19 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			   pivotYType：Y軸的伸縮模式，可以取值為ABSOLUTE、RELATIVE_TO_SELF、RELATIVE_TO_PARENT。
 			   pivotYValue：Y坐標的伸縮值。
 			   */
-			   RotateAnimation ra = new RotateAnimation(
-			     currentDegree, // 動畫起始時物件的角度
-			     -degree,       // 動畫結束時物件旋轉的角度(可大於360度)-表示逆時針旋轉,+表示順時針旋轉
-			     Animation.RELATIVE_TO_SELF, 0.5f, //動畫相對於物件的X座標的開始位置, 從0%~100%中取值, 50%為物件的X方向坐標上的中點位置
-			     Animation.RELATIVE_TO_SELF, 0.5f); //動畫相對於物件的Y座標的開始位置, 從0%~100%中取值, 50%為物件的Y方向坐標上的中點位置
+//			   RotateAnimation ra = new RotateAnimation(
+//			     currentDegree, // 動畫起始時物件的角度
+//			     -degree,       // 動畫結束時物件旋轉的角度(可大於360度)-表示逆時針旋轉,+表示順時針旋轉
+//			     Animation.RELATIVE_TO_SELF, 0.5f, //動畫相對於物件的X座標的開始位置, 從0%~100%中取值, 50%為物件的X方向坐標上的中點位置
+//			     Animation.RELATIVE_TO_SELF, 0.5f); //動畫相對於物件的Y座標的開始位置, 從0%~100%中取值, 50%為物件的Y方向坐標上的中點位置
 
-			   ra.setDuration(200); // 旋轉過程持續時間
-			   ra.setRepeatCount(-1); // 動畫重複次數 (-1 表示一直重複)
+//			   ra.setDuration(200); // 旋轉過程持續時間
+//			   ra.setRepeatCount(-1); // 動畫重複次數 (-1 表示一直重複)
 //			   img.startAnimation(ra); // 羅盤圖片使用旋轉動畫
-			   currentDegree = -degree; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
-			   Log.i("fff", "currentDegree="+degree);
+			   currentDegree = degree+80; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
+			   if(currentDegree>=360)
+				   currentDegree = currentDegree-360;
+//			   Log.i("fff", "currentDegree="+currentDegree);
 			
 		}
 	}

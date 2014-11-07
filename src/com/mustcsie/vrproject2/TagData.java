@@ -18,4 +18,7 @@ public class TagData implements Serializable{
 		this.longitude = longitude;
 		this.image = bitmap;
 	}
+	public Bitmap getImage() {
+		return image;
+	}
 }
