@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,8 +41,18 @@ public class SecondActivity extends Activity {
 			e.printStackTrace();
 		}
 		dataList = sJson.getList();
-		Log.i("fff", "dataList ="+dataList.size());
-		tView.resume();
+		tView.setTagDataList(dataList);
+		
+		
+		DisplayMetrics metrics = new DisplayMetrics(); 
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        Log.i("ttt", "螢幕寬"+metrics.widthPixels);
+        Log.i("ttt", "螢幕高"+metrics.heightPixels);
+        tView.setScanHeight(metrics.heightPixels);	//將螢幕高傳遞給tView
+        tView.setScanWidth(metrics.widthPixels); 		//將螢幕寬傳遞給tView
+        
+        tView.resume();
+		
 	}
 	
 	@Override

@@ -21,4 +21,12 @@ public class TagData implements Serializable{
 	public Bitmap getImage() {
 		return image;
 	}
+	
+	public double getLatitude() {
+		return latitude;
+	}
+	
+	public double getLongitude() {
+		return	longitude;
+	}
 }

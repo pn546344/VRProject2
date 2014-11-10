@@ -36,13 +36,16 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private Thread t;
 	private LocationManager lManager;
 	private String bestGPS = null;
-	private int scanHeight=0,scanWidth=0;	//螢幕高,螢幕寬
+	private double scanHeight=0,scanWidth=0 , angle=0;	//螢幕高,螢幕寬  , 螢幕角
 	private double latiude=0,longitude=0;	//緯度,經度
 	private boolean loopStop = false;
 	private SensorManager sm;
 	private float currentDegree = 0f;  //電子羅盤角度變數
 	private LinkedList<TagData> dataList;
 	private Canvas canvas;
+	private TagData tag ;
+	private Location loc = new Location("");
+	private Location myLoc = new Location("");
 	
 	public TagView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -62,17 +65,21 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		if(bestGPS != null){
 			Location loc = lManager.getLastKnownLocation(bestGPS);
 			showLocation(loc);
-			lManager.requestLocationUpdates(bestGPS, 1000, 10, this);
+			lManager.requestLocationUpdates(bestGPS, 1000, 1, this);
 		}
 		
 		sm = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
 		sm.registerListener(this, sm.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_FASTEST);
+	
+	
 	}
 	private void showLocation(Location loc) {
 		// TODO Auto-generated method stub
 		Toast.makeText(context, "is Update", Toast.LENGTH_SHORT).show();
 		latiude = loc.getLatitude();
 		longitude = loc.getLongitude();
+		myLoc.setLatitude(latiude);
+		myLoc.setLongitude(longitude);
 		Log.i("fff", "latiude ="+latiude);
 		Log.i("fff", "longitude ="+longitude);
 		
@@ -107,26 +114,49 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		while(true)
+		Log.i("fff", "scanHeight="+scanHeight );
+		Log.i("fff", "scanWidth="+scanWidth);
+		while(!loopStop)
 		{
 			
 			if(!holder.getSurface().isValid())
 				continue;
 				
-		canvas = holder.lockCanvas();
-//		canvas.drawColor(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR); //重製畫面使tagview維持透明
-//		canvas.drawARGB(255, 255, 255, 0);
-		Bitmap bit = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
-		canvas.drawBitmap(bit, 0, 0,null);
-		//Log.i("canvas", "YES3");
+			canvas = holder.lockCanvas();
+			canvas.drawColor(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR); //重製畫面使TagView維持透明
+			for(int i=0;i<dataList.size();i++)
+			{
+				tag = dataList.get(i);
+				Bitmap tagImage = tag.getImage();
+				if(tagImage == null)
+					tagImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+				loc.setLatitude(tag.getLatitude());
+				loc.setLongitude(tag.getLongitude());
+				angle = (int) (currentDegree-gps2d(loc));
+				float dest =  myLoc.distanceTo(loc)*10;
+				
+				/*假如電子羅盤的角度-目標物的方位角>180,代表此目標我需要旋轉本體超過半圈,因此可以判定物體的位置在另外一邊
+				因此將算出的角度-360取得反向旋轉的角度
+				angle 角度如果為正 , 代表物體在本體的左邊 , 反之如果角度為負 , 代表物體在本體的左邊
+				*/
+				if(angle > 180 )		
+					angle -= 360;    
+				canvas.drawBitmap(tagImage, (float) (scanWidth/2-angle*11),-(dest-1080),null);
+//				if(angle < 0)
+//				Log.i("fff", "angle ="+angle);
+//				Log.i("fff", "gps2d ="+gps2d(loc));
+//				Log.i("fff", "currentDegree ="+currentDegree);
+				if(dest > 0 )
+				Log.i("fff", "loc.distance = "+dest);
+			}
 
-		holder.unlockCanvasAndPost(canvas);
+			holder.unlockCanvasAndPost(canvas);
 		}
 	}
 	@Override
 	public void onLocationChanged(Location location) {
 		// 當位置發生改變時
-		
+		showLocation(location);
 	}
 	@Override
 	public void onProviderDisabled(String provider) {
@@ -174,7 +204,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 //			   ra.setDuration(200); // 旋轉過程持續時間
 //			   ra.setRepeatCount(-1); // 動畫重複次數 (-1 表示一直重複)
 //			   img.startAnimation(ra); // 羅盤圖片使用旋轉動畫
-			   currentDegree = degree+80; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
+			   currentDegree = degree+90; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
 			   if(currentDegree>=360)
 				   currentDegree = currentDegree-360;
 //			   Log.i("fff", "currentDegree="+currentDegree);
@@ -197,9 +227,20 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		d=Math.sqrt(1-d*d);
 		d=Math.cos(lat_b)*Math.sin(lng_b-lng_a)/d;
 		d=Math.asin(d)*180/Math.PI;
+		if(d <0 )
+			d += 360;
 
 		// d = Math.round(d*10000);
+//		Log.i("fff", "gps2d ="+d);
 		return d;
 		}
+	public void setScanHeight(int heightPixels) {
+		// TODO Auto-generated method stub
+		scanHeight = heightPixels;
+	}
+	public void setScanWidth(int widthPixels) {
+		// TODO Auto-generated method stub
+		scanWidth = widthPixels;
+	}
 
 }
