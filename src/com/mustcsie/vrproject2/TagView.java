@@ -1,5 +1,6 @@
 package com.mustcsie.vrproject2;
 
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
 import com.google.android.gms.internal.ho;
@@ -18,14 +19,18 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class TagView extends SurfaceView implements	Runnable, LocationListener, SensorEventListener{
@@ -44,6 +49,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private LinkedList<TagData> dataList;
 	private Canvas canvas;
 	private TagData tag ;
+	private float senserAngleData=0;
 	private Location loc = new Location("");
 	private Location myLoc = new Location("");
 	
@@ -51,6 +57,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		super(context, attrs);
 		this.context = context;
 		holder = getHolder();
+		
 		
 		DisplayMetrics metrics = new DisplayMetrics();		//取得螢幕尺寸
 		WindowManager wManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
@@ -107,6 +114,21 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		}
 	}
 	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		// TODO Auto-generated method stub
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_POINTER_2_DOWN:
+			float x = event.getX();
+			float y = event.getY();
+			Log.i("fff", "x = "+x);
+			Log.i("fff", "y = "+y);
+			break;
+
+		}
+		return super.onTouchEvent(event);
+	}
+	
 	public void setTagDataList(LinkedList<TagData> dataList) {
 		this.dataList = dataList;
 	}
@@ -132,7 +154,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 					tagImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
 				loc.setLatitude(tag.getLatitude());
 				loc.setLongitude(tag.getLongitude());
-				angle = (int) (currentDegree-gps2d(loc));
+				angle = (int) (currentDegree-myLoc.bearingTo(loc));
 				float dest =  myLoc.distanceTo(loc)*10;
 				
 				/*假如電子羅盤的角度-目標物的方位角>180,代表此目標我需要旋轉本體超過半圈,因此可以判定物體的位置在另外一邊
@@ -141,13 +163,14 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				*/
 				if(angle > 180 )		
 					angle -= 360;    
-				canvas.drawBitmap(tagImage, (float) (scanWidth/2-angle*11),-(dest-1080),null);
+				canvas.drawBitmap(tagImage, (float) (scanWidth/2-angle*10),-(dest-1080),null);
 //				if(angle < 0)
 //				Log.i("fff", "angle ="+angle);
-//				Log.i("fff", "gps2d ="+gps2d(loc));
 //				Log.i("fff", "currentDegree ="+currentDegree);
-				if(dest > 0 )
-				Log.i("fff", "loc.distance = "+dest);
+//				if(dest > 0 ) 
+//				Log.i("fff", "loc.distance = "+dest);
+//				Log.i("fff", "data info = "+i);
+//				Log.i("fff", "bearing = "+myLoc.bearingTo(loc));
 			}
 
 			holder.unlockCanvasAndPost(canvas);
@@ -183,7 +206,10 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		// 傳感器報告新的值(方向改變)
 		if (arg0.sensor.getType() == Sensor.TYPE_ORIENTATION) {
 			   float degree = arg0.values[0];
-			   
+			   if(senserAngleData != degree && (senserAngleData-degree<-30 || senserAngleData-degree>30))
+			   {
+				   senserAngleData = degree;
+			   }
 			   /*
 			   RotateAnimation類別：旋轉變化動畫類
 			    
@@ -205,35 +231,14 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 //			   ra.setRepeatCount(-1); // 動畫重複次數 (-1 表示一直重複)
 //			   img.startAnimation(ra); // 羅盤圖片使用旋轉動畫
 			   currentDegree = degree+90; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
-			   if(currentDegree>=360)
-				   currentDegree = currentDegree-360;
+			   if(currentDegree<=-360)
+				   currentDegree = currentDegree+360;
 //			   Log.i("fff", "currentDegree="+currentDegree);
-			
+			   
+			  
 		}
 	}
 	
-	private double gps2d(Location loc) {
-		//算gps兩點座標的角度
-		double d = 0;
-		double lat_a=0,lng_a=0,lat_b=24.8637871,lng_b=120.9903995;
-		lat_a = loc.getLatitude();
-		lng_a = loc.getLongitude();
-		lat_a=lat_a*Math.PI/180;
-		lng_a=lng_a*Math.PI/180;
-		lat_b=lat_b*Math.PI/180;
-		lng_b=lng_b*Math.PI/180;
-
-		d=Math.sin(lat_a)*Math.sin(lat_b)+Math.cos(lat_a)*Math.cos(lat_b)*Math.cos(lng_b-lng_a);
-		d=Math.sqrt(1-d*d);
-		d=Math.cos(lat_b)*Math.sin(lng_b-lng_a)/d;
-		d=Math.asin(d)*180/Math.PI;
-		if(d <0 )
-			d += 360;
-
-		// d = Math.round(d*10000);
-//		Log.i("fff", "gps2d ="+d);
-		return d;
-		}
 	public void setScanHeight(int heightPixels) {
 		// TODO Auto-generated method stub
 		scanHeight = heightPixels;
@@ -242,5 +247,5 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		// TODO Auto-generated method stub
 		scanWidth = widthPixels;
 	}
-
+	
 }

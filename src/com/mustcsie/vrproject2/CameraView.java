@@ -1,20 +1,37 @@
 package com.mustcsie.vrproject2;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.hardware.Camera.AutoFocusCallback;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder.Callback;
+import android.widget.ImageView;
 
-public class CameraView extends SurfaceView implements Callback,AutoFocusCallback{
+public class CameraView extends SurfaceView implements Callback,AutoFocusCallback, SensorEventListener{
 
 	SurfaceHolder holder;
 	Context context;
 	Camera camera;
+	ImageView imageView;
+	private SensorManager sm;
+	private float senserAngleData=0;
 	public CameraView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
@@ -22,6 +39,7 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 		//使用surfaceholder控制surfaceview
 		holder=getHolder();
 		holder.addCallback(this);
+		
 	}
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
@@ -29,6 +47,8 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 		// TODO Auto-generated method stub
 		camera.startPreview();					//啟用相機擷取畫面
 		camera.autoFocus(this);					//自動對焦(只會對焦一次)
+		sm = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+		sm.registerListener(this, sm.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_FASTEST);
 	}
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
@@ -51,6 +71,33 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 	@Override
 	public void onAutoFocus(boolean success, Camera camera) {
 		// TODO Auto-generated method stub
+		Log.i("ddd", "onAutoFocus");		
+	}
+	
+	public void doAutoFocus() {
+		camera.autoFocus(this);
+	}
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		// TODO Auto-generated method stub
+		if(event.sensor.getType() == Sensor.TYPE_ORIENTATION)
+		{
+			float degree = event.values[0];
+			float degree1 = event.values[1];
+			float degree2 = event.values[2];
+			if(senserAngleData != degree && (senserAngleData-degree<-30 || senserAngleData-degree>30))
+			   {
+				   senserAngleData = degree;
+				   Log.i("ddd", "Camera View degree"+degree);
+				   camera.autoFocus(this);
+			   }
+		}
+	}
+
+	
 }

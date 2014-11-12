@@ -6,18 +6,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 public class SecondActivity extends Activity {
 	String bigPoint;
 	CameraView cView;
 	TagView tView;
+	TextView tv;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,6 +57,7 @@ public class SecondActivity extends Activity {
         tView.setScanWidth(metrics.widthPixels); 		//±N¿Ã¹õ¼e¶Ç»¼µ¹tView
         
         tView.resume();
+		
 		
 	}
 	

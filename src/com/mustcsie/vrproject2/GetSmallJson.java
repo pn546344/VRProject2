@@ -68,6 +68,7 @@ public class GetSmallJson extends Thread{
 					bitmap = sBitmap.getBitmap();
 					TagData tData = new TagData(name, content, latitude, longitude, bitmap);
 					dataList.add(tData);
+					Log.i("fff", "Device_Name = "+name+"url = "+json.getString("Device_Images"));
 				}
 			}
 		} catch (MalformedURLException e) {

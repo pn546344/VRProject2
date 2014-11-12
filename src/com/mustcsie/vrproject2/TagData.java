@@ -29,4 +29,8 @@ public class TagData implements Serializable{
 	public double getLongitude() {
 		return	longitude;
 	}
+	
+	public String getName() {
+		return name;
+	}
 }

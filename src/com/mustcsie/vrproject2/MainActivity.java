@@ -47,6 +47,7 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 		bestGPS = lManager.getBestProvider(criteria, true);
 		if (bestGPS != null) {
 			loc = lManager.getLastKnownLocation(bestGPS);
+			Log.i("fff", "bestGPS is not null");
 		}
 		MapFragment frag=(MapFragment)getFragmentManager().findFragmentById(R.id.fragment1);
 		map=frag.getMap();
@@ -57,6 +58,7 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		if(bestGPS != null){
 		gbJson = new GetBigJson("http://120.105.81.47/login/big_android.php?latiude="+loc.getLatitude()+""+"&longitude="+loc.getLongitude()+"");
 		gbJson.start();
 		try {
@@ -67,6 +69,7 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
 		}
 		super.onResume();
 	}
