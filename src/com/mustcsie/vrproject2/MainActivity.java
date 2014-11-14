@@ -76,21 +76,21 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 	
 	private void makerTag() {
 		MarkerOptions options = new MarkerOptions();
-		Marker marker;
+		Marker marker ;
 		LatLng latlng;
 		BigPoint bigPoint;
 		for (int i = 0; i < list.size(); i++) {
 			bigPoint = list.get(i);
 			latlng = new LatLng(bigPoint.getLatitude(), bigPoint.getLongitude());
-			Log.i("ttt", "bigPoint.getLatitude = "+bigPoint.getLatitude());
-			Log.i("ttt", "latlong = "+latlng);
+//			Log.i("ttt", "bigPoint.getLatitude = "+bigPoint.getLatitude());
+//			Log.i("ttt", "latlong = "+latlng);
 			options.position(latlng);
 			Log.i("ttt", "name ="+bigPoint.getName());
-			options.title(bigPoint.getName());
+			options.title(bigPoint.getName());	
 			marker = map.addMarker(options);
-			map.setOnMarkerClickListener(this);
-			Log.i("ttt", "makerTag is loop "+ i);
+//			marker.showInfoWindow();
 		}
+		map.setOnMarkerClickListener(this);
 	}
 	
 	

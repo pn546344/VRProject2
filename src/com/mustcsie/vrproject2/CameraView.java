@@ -12,11 +12,13 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.Camera.AutoFocusCallback;
+import android.hardware.Camera.ShutterCallback;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -99,5 +101,46 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 		}
 	}
 
+	public void takePicture() {
+		if(camera !=null)
+		{
+			camera.autoFocus(this);
+			camera.takePicture(shutter, raw, jpeg);
+			camera.startPreview();
+		}
+			
+		
+	}
+	
+	private void savePicture() {
+		
+	}
+	
+	private ShutterCallback shutter = new ShutterCallback() {
+		
+		@Override
+		public void onShutter() {
+			// TODO Auto-generated method stub
+			Log.i("fff", "shutter");
+		}
+	};
+	
+	private PictureCallback raw = new PictureCallback() {
+		
+		@Override
+		public void onPictureTaken(byte[] data, Camera camera) {
+			// TODO Auto-generated method stub
+			Log.i("fff", "row");
+		}
+	};
+	
+	private PictureCallback jpeg = new PictureCallback() {
+		
+		@Override
+		public void onPictureTaken(byte[] data, Camera camera) {
+			// TODO Auto-generated method stub
+			Log.i("fff", "jpeg");
+		}
+	};
 	
 }

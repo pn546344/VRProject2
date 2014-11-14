@@ -15,6 +15,7 @@
     	map:cameraZoom="15"
     	map:uiScrollGestures="false"
     	map:uiRotateGestures="false"
-    	map:uiTiltGestures="false" />
+    	map:uiTiltGestures="false" 
+    	map:uiCompass="true"/>
 
 </LinearLayout>

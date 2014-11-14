@@ -15,4 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="75sp"
+        android:layout_height="75sp"
+        android:layout_gravity="right|center_vertical"
+        android:src="@drawable/camera_icon2" />
+
 </FrameLayout>

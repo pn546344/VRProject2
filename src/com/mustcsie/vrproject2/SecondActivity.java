@@ -12,15 +12,19 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-public class SecondActivity extends Activity {
+public class SecondActivity extends Activity implements OnClickListener {
 	String bigPoint;
 	CameraView cView;
 	TagView tView;
 	TextView tv;
+	ImageView im;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 
 	@Override
@@ -35,6 +39,8 @@ public class SecondActivity extends Activity {
 		tView = (TagView)findViewById(R.id.tagView1);
 		tView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
 		tView.setZOrderOnTop(true);
+		im = (ImageView)findViewById(R.id.imageView1);
+		im.setOnClickListener(this);
 		Intent intent = getIntent();
 		bigPoint = intent.getStringExtra("BigPoint");  //取得大項的名稱
 		GetSmallJson sJson = new GetSmallJson(bigPoint);
@@ -69,6 +75,12 @@ public class SecondActivity extends Activity {
 		finish();
 		super.onDestroy();
 		
+	}
+
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		cView.takePicture();
 	}
 
 }
