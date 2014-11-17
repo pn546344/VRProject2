@@ -68,10 +68,18 @@ public class SecondActivity extends Activity implements OnClickListener {
 	}
 	
 	@Override
-	protected void onDestroy() {
+	protected void onPause() {
 		// TODO Auto-generated method stub
 		tView.destory();
 		tView = null;
+		cView = null;
+		super.onPause();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		
 		finish();
 		super.onDestroy();
 		

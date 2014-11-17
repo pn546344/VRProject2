@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -146,6 +147,17 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				
 			canvas = holder.lockCanvas();
 			canvas.drawColor(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR); //重製畫面使TagView維持透明
+			
+			Paint myPaint = new Paint();
+			myPaint.setColor(Color.BLUE);
+			myPaint.setStrokeCap(Paint.Cap.ROUND);
+			Paint myPaint2 = new Paint();
+			myPaint2.setColor(Color.GREEN);
+			myPaint2.setStrokeCap(Paint.Cap.ROUND);
+			myPaint2.setStrokeWidth(10f);
+			canvas.drawCircle((float)scanWidth/2, (float)(scanHeight*0.95), (float)40, myPaint);
+			canvas.drawLine((float)scanWidth/2, (float)(scanHeight*0.95), (float)scanWidth, (float)(scanHeight*0.95-100), myPaint2);
+			canvas.drawLine((float)scanWidth/2, (float)(scanHeight*0.95), (float)0, (float)(scanHeight*0.95-100), myPaint2);
 			for(int i=0;i<dataList.size();i++)
 			{
 				tag = dataList.get(i);
@@ -243,9 +255,13 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		// TODO Auto-generated method stub
 		scanHeight = heightPixels;
 	}
+	
 	public void setScanWidth(int widthPixels) {
 		// TODO Auto-generated method stub
 		scanWidth = widthPixels;
 	}
+	
+	
+	
 	
 }
