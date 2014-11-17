@@ -412,7 +412,7 @@ containing a value of this type.
     public static final class id {
         public static final int FrameLayout1=0x7f070016;
         public static final int LinearLayout1=0x7f070014;
-        public static final int action_settings=0x7f07001a;
+        public static final int action_settings=0x7f07001d;
         public static final int book_now=0x7f070010;
         public static final int buyButton=0x7f07000a;
         public static final int buy_now=0x7f07000f;
@@ -425,6 +425,9 @@ containing a value of this type.
         public static final int holo_light=0x7f070006;
         public static final int hybrid=0x7f070004;
         public static final int imageView1=0x7f070019;
+        public static final int imageView2=0x7f07001a;
+        public static final int imageView3=0x7f07001b;
+        public static final int imageView4=0x7f07001c;
         public static final int match_parent=0x7f07000c;
         public static final int monochrome=0x7f070013;
         public static final int none=0x7f070000;

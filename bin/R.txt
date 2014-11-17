@@ -95,7 +95,7 @@ int drawable powered_by_google_dark 0x7f020020
 int drawable powered_by_google_light 0x7f020021
 int id FrameLayout1 0x7f070016
 int id LinearLayout1 0x7f070014
-int id action_settings 0x7f07001a
+int id action_settings 0x7f07001d
 int id book_now 0x7f070010
 int id buyButton 0x7f07000a
 int id buy_now 0x7f07000f
@@ -108,6 +108,9 @@ int id holo_dark 0x7f070005
 int id holo_light 0x7f070006
 int id hybrid 0x7f070004
 int id imageView1 0x7f070019
+int id imageView2 0x7f07001a
+int id imageView3 0x7f07001b
+int id imageView4 0x7f07001c
 int id match_parent 0x7f07000c
 int id monochrome 0x7f070013
 int id none 0x7f070000

@@ -24,7 +24,7 @@ public class SecondActivity extends Activity implements OnClickListener {
 	CameraView cView;
 	TagView tView;
 	TextView tv;
-	ImageView im;
+	ImageView im,area1,area2,area3;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 
 	@Override
@@ -40,7 +40,13 @@ public class SecondActivity extends Activity implements OnClickListener {
 		tView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
 		tView.setZOrderOnTop(true);
 		im = (ImageView)findViewById(R.id.imageView1);
+		area1 = (ImageView)findViewById(R.id.imageView2);
+		area2 = (ImageView)findViewById(R.id.imageView3);
+		area3 = (ImageView)findViewById(R.id.imageView4);
 		im.setOnClickListener(this);
+		area1.setOnClickListener(this);
+		area2.setOnClickListener(this);
+		area3.setOnClickListener(this);
 		Intent intent = getIntent();
 		bigPoint = intent.getStringExtra("BigPoint");  //取得大項的名稱
 		GetSmallJson sJson = new GetSmallJson(bigPoint);
@@ -88,7 +94,22 @@ public class SecondActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
-		cView.takePicture();
+		switch (arg0.getId()) {
+		case R.id.imageView1:
+			cView.takePicture();
+			break;
+		case R.id.imageView2:
+			tView.changeArea1State();
+			break;
+		case R.id.imageView3:
+			tView.changeArea2State();
+			break;
+		case R.id.imageView4:
+			tView.changeArea3State();
+			break;
+		
+		}
+		
 	}
 
 }

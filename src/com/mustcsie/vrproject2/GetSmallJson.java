@@ -57,16 +57,17 @@ public class GetSmallJson extends Thread{
 				for(int i=0;i<jsonArray.length();i++)
 				{
 					JSONObject json = jsonArray.getJSONObject(i);
-					String name , content;
+					String name , content , area;
 					double latitude,longitude;
 					Bitmap bitmap;
-					name = json.getString("Device_Name");
-					content = json.getString("Device_Content");
-					latitude = json.getDouble("Device_Latitude");
-					longitude = json.getDouble("Device_Longitude");
+					name 		= 	json.getString("Device_Name");
+					content 	= 	json.getString("Device_Content");
+					latitude 	= 	json.getDouble("Device_Latitude");
+					longitude 	= 	json.getDouble("Device_Longitude");
+					area 		= 	json.getString("Area_ID");
 					SmallBitmap sBitmap = new SmallBitmap(json.getString("Device_Images"));
 					bitmap = sBitmap.getBitmap();
-					TagData tData = new TagData(name, content, latitude, longitude, bitmap);
+					TagData tData = new TagData(name, content, latitude, longitude, bitmap , area);
 					dataList.add(tData);
 					Log.i("fff", "Device_Name = "+name+"url = "+json.getString("Device_Images"));
 				}

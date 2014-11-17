@@ -44,7 +44,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private String bestGPS = null;
 	private double scanHeight=0,scanWidth=0 , angle=0;	//螢幕高,螢幕寬  , 螢幕角
 	private double latiude=0,longitude=0;	//緯度,經度
-	private boolean loopStop = false;
+	private boolean loopStop = false , area1 = true ,area2 = true ,area3 = true;
 	private SensorManager sm;
 	private float currentDegree = 0f;  //電子羅盤角度變數
 	private LinkedList<TagData> dataList;
@@ -161,6 +161,15 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			for(int i=0;i<dataList.size();i++)
 			{
 				tag = dataList.get(i);
+				String areaNO = tag.getArea();
+				if (areaNO.equals("0") && !area1) {
+					continue;
+				}else if(areaNO.equals("1") && !area2){
+					continue;
+				}else if (areaNO.equals("2") && !area3) {
+					continue;
+				}
+				
 				Bitmap tagImage = tag.getImage();
 				if(tagImage == null)
 					tagImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
@@ -176,13 +185,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				if(angle > 180 )		
 					angle -= 360;    
 				canvas.drawBitmap(tagImage, (float) (scanWidth/2-angle*10),-(dest-1080),null);
-//				if(angle < 0)
-//				Log.i("fff", "angle ="+angle);
-//				Log.i("fff", "currentDegree ="+currentDegree);
-//				if(dest > 0 ) 
-//				Log.i("fff", "loc.distance = "+dest);
-//				Log.i("fff", "data info = "+i);
-//				Log.i("fff", "bearing = "+myLoc.bearingTo(loc));
+
 			}
 
 			holder.unlockCanvasAndPost(canvas);
@@ -245,9 +248,6 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			   currentDegree = degree+90; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
 			   if(currentDegree<=-360)
 				   currentDegree = currentDegree+360;
-//			   Log.i("fff", "currentDegree="+currentDegree);
-			   
-			  
 		}
 	}
 	
@@ -261,7 +261,19 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		scanWidth = widthPixels;
 	}
 	
+	public void changeArea1State() {
+		area1 = !area1;
+		Log.i("fff", "area1="+area1);
+	}
 	
-	
+	public void changeArea2State() {
+		area2 = !area2;
+		Log.i("fff", "area2="+area2);
+	}
+
+	public void changeArea3State() {
+		area3 = !area3;
+		Log.i("fff", "area3="+area3);
+	}
 	
 }
