@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,15 +18,18 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SecondActivity extends Activity implements OnClickListener {
 	String bigPoint;
 	CameraView cView;
 	TagView tView;
-	TextView tv;
+	TextView tvContent;
 	ImageView im,area1,area2,area3;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
+	private boolean is_exit = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +42,23 @@ public class SecondActivity extends Activity implements OnClickListener {
 		cView = (CameraView)findViewById(R.id.cameraView1);
 		tView = (TagView)findViewById(R.id.tagView1);
 		tView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-		tView.setZOrderOnTop(true);
+//		tView.setZOrderOnTop(true);
+		tView.setZOrderMediaOverlay(true);
 		im = (ImageView)findViewById(R.id.imageView1);
 		area1 = (ImageView)findViewById(R.id.imageView2);
 		area2 = (ImageView)findViewById(R.id.imageView3);
 		area3 = (ImageView)findViewById(R.id.imageView4);
+		tvContent = (TextView)findViewById(R.id.textView1);
+		
+		
+		LinearLayout lLayout = (LinearLayout)findViewById(R.id.myLayout);
+		lLayout.setVisibility(View.GONE);
+		tView.setContentLayout(lLayout);
+		tView.setTextContent(tvContent);
+		
+		
+		
+		
 		im.setOnClickListener(this);
 		area1.setOnClickListener(this);
 		area2.setOnClickListener(this);
@@ -111,5 +127,50 @@ public class SecondActivity extends Activity implements OnClickListener {
 		}
 		
 	}
-
+	
+	@Override
+	 public boolean onKeyDown(int keyCode, KeyEvent event) {
+	  boolean returnValue = false;
+	  if (keyCode == KeyEvent.KEYCODE_BACK && tView.getTextContentState()==true) {
+			Log.i("fff", "keydown back");
+			tView.closeTextContent();;
+			return false;
+		}
+	  if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount()==0 && is_exit == false){
+	   Toast.makeText(this, "再點一下返回鍵返回主頁", Toast.LENGTH_SHORT).show();
+	   is_exit = true;
+	   //一開始 先設定 返回的 flag = true ,若使用者兩秒內沒有動作，則將該 flag 恢復為 false
+	   new Thread(new Runnable() {
+	    public void run() {
+	     try {
+	      Thread.sleep(2000);
+	      is_exit = false;
+	     } catch (InterruptedException e) {
+	      // TODO Auto-generated catch block
+	      e.printStackTrace();
+	     }
+	    }
+	   }).start();
+	   
+	   returnValue = true;   
+	  }else{
+	   returnValue = super.onKeyDown(keyCode, event);
+	  }
+	  return returnValue;
+	 }
+	
+	
+	
+	
+/*	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Log.i("fff", "keydown back");
+			tView.closeTextContent();;
+			return false;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+*/
 }

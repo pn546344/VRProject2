@@ -39,4 +39,9 @@ public class TagData implements Serializable{
 	public String getArea() {
 		return area;
 	}
+	
+	public String getContent() {
+		return content;
+	}
+	
 }

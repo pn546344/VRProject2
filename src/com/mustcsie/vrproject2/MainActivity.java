@@ -47,7 +47,8 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 		bestGPS = lManager.getBestProvider(criteria, true);
 		if (bestGPS != null) {
 			loc = lManager.getLastKnownLocation(bestGPS);
-			Log.i("fff", "bestGPS is not null");
+			Log.i("fff", "bestGPS ="+bestGPS);
+			
 		}
 		MapFragment frag=(MapFragment)getFragmentManager().findFragmentById(R.id.fragment1);
 		map=frag.getMap();

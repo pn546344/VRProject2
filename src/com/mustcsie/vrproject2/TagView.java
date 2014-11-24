@@ -5,7 +5,9 @@ import java.util.LinkedList;
 
 import com.google.android.gms.internal.ho;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -25,12 +27,15 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +49,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private String bestGPS = null;
 	private double scanHeight=0,scanWidth=0 , angle=0;	//螢幕高,螢幕寬  , 螢幕角
 	private double latiude=0,longitude=0;	//緯度,經度
-	private boolean loopStop = false , area1 = true ,area2 = true ,area3 = true;
+	private boolean loopStop = false , area1 = true ,area2 = true ,area3 = true ,contentLayoutState = false;
 	private SensorManager sm;
 	private float currentDegree = 0f;  //電子羅盤角度變數
 	private LinkedList<TagData> dataList;
@@ -53,6 +58,9 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private float senserAngleData=0;
 	private Location loc = new Location("");
 	private Location myLoc = new Location("");
+	private LinkedList<TagDetail> tagDetailList = new LinkedList<TagDetail>();
+	private LinearLayout contentLayout;
+	private TextView tv;
 	
 	public TagView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -81,9 +89,9 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	
 	
 	}
+
 	private void showLocation(Location loc) {
 		// TODO Auto-generated method stub
-		Toast.makeText(context, "is Update", Toast.LENGTH_SHORT).show();
 		latiude = loc.getLatitude();
 		longitude = loc.getLongitude();
 		myLoc.setLatitude(latiude);
@@ -119,11 +127,29 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	public boolean onTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
 		switch (event.getAction()) {
-		case MotionEvent.ACTION_POINTER_2_DOWN:
+		case MotionEvent.ACTION_DOWN:
 			float x = event.getX();
 			float y = event.getY();
-			Log.i("fff", "x = "+x);
-			Log.i("fff", "y = "+y);
+			Log.i("fff", "x ="+x + " y = "+y);
+			
+			//判斷點選的圖示項目為何,是否存在
+			for(int i=0;i<tagDetailList.size();i++)
+			{
+				if((x>tagDetailList.get(i).getX0() && x<tagDetailList.get(i).getX1()) 
+						&& 
+						(y>tagDetailList.get(i).getY0() && y < tagDetailList.get(i).getY1())
+						&& tagDetailList.get(i).getIsSurvival())
+				{
+					Log.i("fff", "tagDetailList ID ="+tagDetailList.get(i).getId());
+					String str="";
+					str = dataList.get(i).getContent();		//抓取按下目標的內容文字
+					Log.i("fff", "你按下 "+str);
+					tv.setText(str);
+					contentLayout.setVisibility(View.VISIBLE);
+					contentLayoutState = true;
+					
+				}
+			}
 			break;
 
 		}
@@ -133,6 +159,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	public void setTagDataList(LinkedList<TagData> dataList) {
 		this.dataList = dataList;
 	}
+	
+
 	
 	@Override
 	public void run() {
@@ -149,7 +177,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			canvas.drawColor(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR); //重製畫面使TagView維持透明
 			
 			Paint myPaint = new Paint();
-			myPaint.setColor(Color.BLUE);
+			myPaint.setColor(Color.RED);
 			myPaint.setStrokeCap(Paint.Cap.ROUND);
 			Paint myPaint2 = new Paint();
 			myPaint2.setColor(Color.GREEN);
@@ -161,12 +189,17 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			for(int i=0;i<dataList.size();i++)
 			{
 				tag = dataList.get(i);
-				String areaNO = tag.getArea();
+				
+				//設定是否顯示圖層
+				String areaNO = tag.getArea();				
 				if (areaNO.equals("0") && !area1) {
+					tagDetailList.get(i).setIsSurvival(false);
 					continue;
 				}else if(areaNO.equals("1") && !area2){
+					tagDetailList.get(i).setIsSurvival(false);
 					continue;
 				}else if (areaNO.equals("2") && !area3) {
+					tagDetailList.get(i).setIsSurvival(false);
 					continue;
 				}
 				
@@ -185,6 +218,25 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				if(angle > 180 )		
 					angle -= 360;    
 				canvas.drawBitmap(tagImage, (float) (scanWidth/2-angle*10),-(dest-1080),null);
+				
+				float x = tagImage.getWidth();
+				float y = tagImage.getHeight();
+				TagDetail tagDetail = new TagDetail(i, (float) (scanWidth/2-angle*10),
+						(float) (scanWidth/2-angle*10)+x, -(dest-1080), -(dest-1080)+y);
+				
+				if(tagDetailList.size()<=dataList.size()){
+					tagDetailList.add(tagDetail);
+				}
+				else
+				{
+					tagDetailList.get(i).setX0((float) (scanWidth/2-angle*10));
+					tagDetailList.get(i).setX1((float) (scanWidth/2-angle*10)+x);
+					tagDetailList.get(i).setY0(-(dest-1080));
+					tagDetailList.get(i).setY1(-(dest-1080)+y);
+					tagDetailList.get(i).setIsSurvival(true);
+				}
+				
+				
 
 			}
 
@@ -276,4 +328,20 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		Log.i("fff", "area3="+area3);
 	}
 	
+	public void setContentLayout(LinearLayout layout) {
+		contentLayout = layout;
+	}
+	
+	public void setTextContent(TextView tv) {
+		this.tv = tv;
+	}
+	
+	public void closeTextContent() {
+		contentLayout.setVisibility(View.GONE);
+		contentLayoutState = false;
+	}
+	
+	public boolean getTextContentState() {
+		return contentLayoutState;
+	}
 }
