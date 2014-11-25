@@ -16,6 +16,6 @@
     	map:uiScrollGestures="false"
     	map:uiRotateGestures="false"
     	map:uiTiltGestures="false" 
-    	map:uiCompass="true"/>
+    	map:uiCompass="false"/>
 
 </LinearLayout>

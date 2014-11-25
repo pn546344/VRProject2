@@ -30,6 +30,7 @@ public class SecondActivity extends Activity implements OnClickListener {
 	ImageView im,area1,area2,area3;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 	private boolean is_exit = false;
+	private boolean area1Close = false , area2Close = false , area3Close = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -116,14 +117,28 @@ public class SecondActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.imageView2:
 			tView.changeArea1State();
+			area1Close = !area1Close;
+			if(area1Close)
+				area1.setImageDrawable(getResources().getDrawable(R.drawable.button1false));
+			else
+				area1.setImageDrawable(getResources().getDrawable(R.drawable.button1));
 			break;
 		case R.id.imageView3:
 			tView.changeArea2State();
+			area2Close = !area2Close;
+			if(area2Close)
+				area2.setImageDrawable(getResources().getDrawable(R.drawable.button2false));
+			else 
+				area2.setImageDrawable(getResources().getDrawable(R.drawable.button2));
 			break;
 		case R.id.imageView4:
 			tView.changeArea3State();
+			area3Close = !area3Close;
+			if(area3Close)
+				area3.setImageDrawable(getResources().getDrawable(R.drawable.button3false));
+			else 
+				area3.setImageDrawable(getResources().getDrawable(R.drawable.button3));
 			break;
-		
 		}
 		
 	}
@@ -133,7 +148,7 @@ public class SecondActivity extends Activity implements OnClickListener {
 	  boolean returnValue = false;
 	  if (keyCode == KeyEvent.KEYCODE_BACK && tView.getTextContentState()==true) {
 			Log.i("fff", "keydown back");
-			tView.closeTextContent();;
+			tView.closeTextContent();
 			return false;
 		}
 	  if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount()==0 && is_exit == false){

@@ -33,21 +33,21 @@
 
             <ImageView
                 android:id="@+id/imageView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher" />
+                android:layout_width="50sp"
+                android:layout_height="50sp"
+                android:src="@drawable/button1" />
 
             <ImageView
                 android:id="@+id/imageView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher" />
+                android:layout_width="50sp"
+                android:layout_height="50sp"
+                android:src="@drawable/button2" />
 
             <ImageView
                 android:id="@+id/imageView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher" />
+                android:layout_width="50sp"
+                android:layout_height="50sp"
+                android:src="@drawable/button3" />
 
         </LinearLayout>
 
@@ -59,7 +59,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="right"
         android:background="#FFFFFF"
-        android:orientation="vertical" >
+        android:orientation="vertical" 
+        android:animateLayoutChanges = "true">
 
         <TextView
             android:id="@+id/textView1"

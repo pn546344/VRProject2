@@ -33,8 +33,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +63,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private LinkedList<TagDetail> tagDetailList = new LinkedList<TagDetail>();
 	private LinearLayout contentLayout;
 	private TextView tv;
+	final AlphaAnimation alphaAnimation = new AlphaAnimation(0.0f, 1.0f);
+	final AlphaAnimation alphaAnimation2 = new AlphaAnimation(1.0f, 0.0f);
 	
 	public TagView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -138,13 +142,15 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				if((x>tagDetailList.get(i).getX0() && x<tagDetailList.get(i).getX1()) 
 						&& 
 						(y>tagDetailList.get(i).getY0() && y < tagDetailList.get(i).getY1())
-						&& tagDetailList.get(i).getIsSurvival())
+						&& tagDetailList.get(i).getIsSurvival() && contentLayoutState != true)
 				{
 					Log.i("fff", "tagDetailList ID ="+tagDetailList.get(i).getId());
 					String str="";
 					str = dataList.get(i).getContent();		//抓取按下目標的內容文字
 					Log.i("fff", "你按下 "+str);
 					tv.setText(str);
+					alphaAnimation.setDuration(1000);
+					contentLayout.startAnimation(alphaAnimation);
 					contentLayout.setVisibility(View.VISIBLE);
 					contentLayoutState = true;
 					
@@ -337,6 +343,9 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	}
 	
 	public void closeTextContent() {
+		//關閉介紹畫面
+		alphaAnimation2.setDuration(1000);
+		contentLayout.startAnimation(alphaAnimation2);
 		contentLayout.setVisibility(View.GONE);
 		contentLayoutState = false;
 	}
