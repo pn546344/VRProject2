@@ -32,61 +32,92 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 public class MainActivity extends Activity implements OnMyLocationChangeListener, OnMarkerClickListener, SensorEventListener {
 	GoogleMap map;
 	private GetBigJson gbJson;
 	private LocationManager lManager;
-	private Location loc;
+	private Location loc , myLoc;
 	private String bestGPS=null;
 	private String[] item;
 	private LinkedList<BigPoint> list = new LinkedList<BigPoint>();
 	private SensorManager sm;
-	CameraPosition cp ;
+	private CameraPosition cp ;
+	private int count = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		ActionBar bar = getActionBar();
 		bar.hide();
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		lManager = (LocationManager)getSystemService(LOCATION_SERVICE);
-		Criteria criteria = new Criteria();
-		criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-		bestGPS = lManager.getBestProvider(criteria, true);
-		if (bestGPS != null) {
-			loc = lManager.getLastKnownLocation(bestGPS);
-			Log.i("fff", "bestGPS ="+bestGPS);
+//		Criteria criteria = new Criteria();
+//		criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+//		bestGPS = lManager.getBestProvider(criteria, true);
+//		if (bestGPS != null) {
+//			loc = lManager.getLastKnownLocation(bestGPS);
+//			Log.i("fff", "bestGPS ="+bestGPS);
 			
-		}
+//		}
 		MapFragment frag=(MapFragment)getFragmentManager().findFragmentById(R.id.fragment1);
 		map=frag.getMap();
 		map.setMyLocationEnabled(true);
 		map.setOnMyLocationChangeListener(this);
 		//LatLng l = new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude());
 		
-		
 		sm = (SensorManager)getSystemService(SENSOR_SERVICE);
-		sm.registerListener(this, sm.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_GAME);
+		
 	}
 	
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
-		if(bestGPS != null){
-		gbJson = new GetBigJson("http://120.105.81.47/login/big_android.php?latiude="+loc.getLatitude()+""+"&longitude="+loc.getLongitude()+"");
-		gbJson.start();
-		try {
-			gbJson.join();
-			item = gbJson.getItem();
-			list = gbJson.getBigJsonData();
-			makerTag();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}
-		
+		/*if(myLoc != null){
+			gbJson = new GetBigJson("http://120.105.81.47/login/big_android.php?latiude="+myLoc.getLatitude()+""+"&longitude="+myLoc.getLongitude()+"");
+			gbJson.start();
+			try {
+				gbJson.join();
+				item = gbJson.getItem();
+				list = gbJson.getBigJsonData();
+				makerTag();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else
+			Log.i("fff", "myLoc is null");
+		*/
+		count = 0;
+		sm.registerListener(this, sm.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_GAME);
 		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		sm.unregisterListener(this);   //撤銷羅盤感應器
+		super.onPause();
+	}
+	
+	private void startMapPoint() {
+		if(myLoc != null){
+			gbJson = new GetBigJson("http://120.105.81.47/login/big_android.php?latiude="+myLoc.getLatitude()+""+"&longitude="+myLoc.getLongitude()+"");
+			gbJson.start();
+			try {
+				gbJson.join();
+				item = gbJson.getItem();
+				list = gbJson.getBigJsonData();
+				makerTag();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			count++;
+		}else
+			Log.i("fff", "myLoc is null");
 	}
 	
 	private void makerTag() {
@@ -145,31 +176,12 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 		// TODO Auto-generated method stub
 		if (arg0.sensor.getType() == Sensor.TYPE_ORIENTATION) {
 			   float degree = arg0.values[0];
-			   /*
-			   RotateAnimation類別：旋轉變化動畫類
-			    
-			   參數說明:
-			   fromDegrees：旋轉的開始角度。
-			   toDegrees：旋轉的結束角度。
-			   pivotXType：X軸的伸縮模式，可以取值為ABSOLUTE、RELATIVE_TO_SELF、RELATIVE_TO_PARENT。
-			   pivotXValue：X坐標的伸縮值。
-			   pivotYType：Y軸的伸縮模式，可以取值為ABSOLUTE、RELATIVE_TO_SELF、RELATIVE_TO_PARENT。
-			   pivotYValue：Y坐標的伸縮值。
-			   */
-//			   RotateAnimation ra = new RotateAnimation(
-//			     currentDegree, // 動畫起始時物件的角度
-//			     -degree,       // 動畫結束時物件旋轉的角度(可大於360度)-表示逆時針旋轉,+表示順時針旋轉
-//			     Animation.RELATIVE_TO_SELF, 0.5f, //動畫相對於物件的X座標的開始位置, 從0%~100%中取值, 50%為物件的X方向坐標上的中點位置
-//			     Animation.RELATIVE_TO_SELF, 0.5f); //動畫相對於物件的Y座標的開始位置, 從0%~100%中取值, 50%為物件的Y方向坐標上的中點位置
 
-//			   ra.setDuration(200); // 旋轉過程持續時間
-//			   ra.setRepeatCount(-1); // 動畫重複次數 (-1 表示一直重複)
-//			   img.startAnimation(ra); // 羅盤圖片使用旋轉動畫
 			   float currentDegree = degree+90; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
 			   if(currentDegree<=-360)
 				   currentDegree = currentDegree+360;
-//			   LatLng l = new LatLng(24.9449639, 121.0905384);
 			   Location getMyLocation = map.getMyLocation();
+			   myLoc = map.getMyLocation();
 			   if (getMyLocation == null) {
 				   Log.i("fff", "getMyLocation is null");
 			   }else 
@@ -177,8 +189,10 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 				   LatLng myLatLng = new LatLng(getMyLocation.getLatitude(), getMyLocation.getLongitude());
 				   cp = new CameraPosition(myLatLng, map.getCameraPosition().zoom, 0, currentDegree);
 				   map.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+				   
 			}
-			   
+			   if(count ==0 && myLoc != null)
+				   startMapPoint();
 		}
 	}
 }

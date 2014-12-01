@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -38,6 +39,7 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +54,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private double scanHeight=0,scanWidth=0 , angle=0;	//螢幕高,螢幕寬  , 螢幕角
 	private double latiude=0,longitude=0;	//緯度,經度
 	private boolean loopStop = false , area1 = true ,area2 = true ,area3 = true ,contentLayoutState = false;
-	private SensorManager sm;
+	private SensorManager sm ; // 方向感應器 
 	private float currentDegree = 0f;  //電子羅盤角度變數
 	private LinkedList<TagData> dataList;
 	private Canvas canvas;
@@ -61,10 +63,11 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private Location loc = new Location("");
 	private Location myLoc = new Location("");
 	private LinkedList<TagDetail> tagDetailList = new LinkedList<TagDetail>();
-	private LinearLayout contentLayout;
-	private TextView tv;
+	private ScrollView contentLayout;
+	private TextView tv , tvName , tvClass;    //tv是景點內容的標籤 , tvName是景點名稱 , tvClass是景點類別
 	final AlphaAnimation alphaAnimation = new AlphaAnimation(0.0f, 1.0f);
 	final AlphaAnimation alphaAnimation2 = new AlphaAnimation(1.0f, 0.0f);
+	private Matrix matrix = new Matrix();
 	
 	public TagView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -85,11 +88,12 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		if(bestGPS != null){
 			Location loc = lManager.getLastKnownLocation(bestGPS);
 			showLocation(loc);
-			lManager.requestLocationUpdates(bestGPS, 1000, 1, this);
+			lManager.requestLocationUpdates(bestGPS, 10000, 100, this);
+			//用bestGPS定位方法,10秒鐘定位一次 , 或超過100公尺定位一次 
 		}
 		
 		sm = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
-		sm.registerListener(this, sm.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_FASTEST);
+		sm.registerListener(this, sm.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_NORMAL);
 	
 	
 	}
@@ -108,11 +112,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	
 	protected void resume() {
 		t = new Thread(this);
+		loopStop = false;
 		t.start();
-	}
-	
-	protected void destory() {
-		loopStop = true;
 	}
 	
 	protected void pause() {
@@ -147,8 +148,15 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 					Log.i("fff", "tagDetailList ID ="+tagDetailList.get(i).getId());
 					String str="";
 					str = dataList.get(i).getContent();		//抓取按下目標的內容文字
-					Log.i("fff", "你按下 "+str);
-					tv.setText(str);
+					String str1 = "";
+					str1 = dataList.get(i).getName();
+					String strClass="" ;
+					strClass = dataList.get(i).getArea();
+					
+					
+					tv.setText(str);  //設定簡介文字
+					tvName.setText(str1);
+					tvClass.setText(strClass);
 					alphaAnimation.setDuration(1000);
 					contentLayout.startAnimation(alphaAnimation);
 					contentLayout.setVisibility(View.VISIBLE);
@@ -211,19 +219,21 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				
 				Bitmap tagImage = tag.getImage();
 				if(tagImage == null)
-					tagImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+					tagImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher); //如果沒有抓到圖,用R.drawable.ic_Launcher代替
 				loc.setLatitude(tag.getLatitude());
 				loc.setLongitude(tag.getLongitude());
 				angle = (int) (currentDegree-myLoc.bearingTo(loc));
 				float dest =  myLoc.distanceTo(loc)*10;
-				
+				int w = tagImage.getWidth();
+				int h = tagImage.getHeight();
+				tagImage = Bitmap.createBitmap(tagImage,0,0,w,h,matrix,true);
 				/*假如電子羅盤的角度-目標物的方位角>180,代表此目標我需要旋轉本體超過半圈,因此可以判定物體的位置在另外一邊
 				因此將算出的角度-360取得反向旋轉的角度
 				angle 角度如果為正 , 代表物體在本體的左邊 , 反之如果角度為負 , 代表物體在本體的左邊
 				*/
 				if(angle > 180 )		
 					angle -= 360;    
-				canvas.drawBitmap(tagImage, (float) (scanWidth/2-angle*10),-(dest-1080),null);
+				canvas.drawBitmap(tagImage, (float) (scanWidth/2-angle*10),-(dest-1080),null); //畫logo
 				
 				float x = tagImage.getWidth();
 				float y = tagImage.getHeight();
@@ -281,6 +291,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			   float degree = arg0.values[0];
 			   if(senserAngleData != degree && (senserAngleData-degree<-30 || senserAngleData-degree>30))
 			   {
+				   
 				   senserAngleData = degree;
 			   }
 			   /*
@@ -334,7 +345,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		Log.i("fff", "area3="+area3);
 	}
 	
-	public void setContentLayout(LinearLayout layout) {
+	public void setContentLayout(ScrollView layout) {
 		contentLayout = layout;
 	}
 	
@@ -352,5 +363,22 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	
 	public boolean getTextContentState() {
 		return contentLayoutState;
+	}
+
+	public void setTextName(TextView tvName) {
+		// TODO Auto-generated method stub
+		this.tvName = tvName	;
+	}
+	
+	public void setTextClass(TextView tvClass) {
+		this.tvClass = tvClass;
+	}
+	
+	public void setMatrixZoomIn() {
+		matrix.postScale(2, 2);
+	}
+	
+	public void setMatrixZoomOut() {
+		matrix.postScale(0.5f, 0.5f);
 	}
 }

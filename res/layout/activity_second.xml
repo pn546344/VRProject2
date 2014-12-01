@@ -53,22 +53,99 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <ZoomControls
+        android:id="@+id/zoomControls1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left" />
+
+    <ScrollView
         android:id="@+id/myLayout"
-        android:layout_width="445dp"
+        android:layout_width="450dp"
         android:layout_height="match_parent"
         android:layout_gravity="right"
-        android:background="#FFFFFF"
-        android:orientation="vertical" 
-        android:animateLayoutChanges = "true">
+        android:background="#FF00FFFF" >
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Large Text"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/imageView5"
+                android:layout_width="50sp"
+                android:layout_height="50sp"
+                android:layout_gravity="top|right"
+                android:src="@drawable/button1" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Large Text"
+                android:textSize="40dp"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="景點類別 : "
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Large Text"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="景點簡介 : "
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Large Text"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <Gallery
+                    android:id="@+id/gallery1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <VideoView
+                android:id="@+id/videoView1"
+                android:layout_width="400sp"
+                android:layout_height="250sp"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>

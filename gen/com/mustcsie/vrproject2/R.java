@@ -418,7 +418,7 @@ containing a value of this type.
     public static final class id {
         public static final int FrameLayout1=0x7f070016;
         public static final int LinearLayout1=0x7f070014;
-        public static final int action_settings=0x7f07001f;
+        public static final int action_settings=0x7f070027;
         public static final int book_now=0x7f070010;
         public static final int buyButton=0x7f07000a;
         public static final int buy_now=0x7f07000f;
@@ -426,6 +426,7 @@ containing a value of this type.
         public static final int cameraView1=0x7f070017;
         public static final int classic=0x7f070011;
         public static final int fragment1=0x7f070015;
+        public static final int gallery1=0x7f070025;
         public static final int grayscale=0x7f070012;
         public static final int holo_dark=0x7f070005;
         public static final int holo_light=0x7f070006;
@@ -434,9 +435,10 @@ containing a value of this type.
         public static final int imageView2=0x7f07001a;
         public static final int imageView3=0x7f07001b;
         public static final int imageView4=0x7f07001c;
+        public static final int imageView5=0x7f07001f;
         public static final int match_parent=0x7f07000c;
         public static final int monochrome=0x7f070013;
-        public static final int myLayout=0x7f07001d;
+        public static final int myLayout=0x7f07001e;
         public static final int none=0x7f070000;
         public static final int normal=0x7f070001;
         public static final int production=0x7f070007;
@@ -446,8 +448,14 @@ containing a value of this type.
         public static final int strict_sandbox=0x7f070009;
         public static final int tagView1=0x7f070018;
         public static final int terrain=0x7f070003;
-        public static final int textView1=0x7f07001e;
+        public static final int textView1=0x7f070020;
+        public static final int textView2=0x7f070021;
+        public static final int textView3=0x7f070022;
+        public static final int textView4=0x7f070023;
+        public static final int textView5=0x7f070024;
+        public static final int videoView1=0x7f070026;
         public static final int wrap_content=0x7f07000d;
+        public static final int zoomControls1=0x7f07001d;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f080000;

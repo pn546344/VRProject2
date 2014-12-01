@@ -101,7 +101,7 @@ int drawable powered_by_google_dark 0x7f020026
 int drawable powered_by_google_light 0x7f020027
 int id FrameLayout1 0x7f070016
 int id LinearLayout1 0x7f070014
-int id action_settings 0x7f07001f
+int id action_settings 0x7f070027
 int id book_now 0x7f070010
 int id buyButton 0x7f07000a
 int id buy_now 0x7f07000f
@@ -109,6 +109,7 @@ int id buy_with_google 0x7f07000e
 int id cameraView1 0x7f070017
 int id classic 0x7f070011
 int id fragment1 0x7f070015
+int id gallery1 0x7f070025
 int id grayscale 0x7f070012
 int id holo_dark 0x7f070005
 int id holo_light 0x7f070006
@@ -117,9 +118,10 @@ int id imageView1 0x7f070019
 int id imageView2 0x7f07001a
 int id imageView3 0x7f07001b
 int id imageView4 0x7f07001c
+int id imageView5 0x7f07001f
 int id match_parent 0x7f07000c
 int id monochrome 0x7f070013
-int id myLayout 0x7f07001d
+int id myLayout 0x7f07001e
 int id none 0x7f070000
 int id normal 0x7f070001
 int id production 0x7f070007
@@ -129,8 +131,14 @@ int id selectionDetails 0x7f07000b
 int id strict_sandbox 0x7f070009
 int id tagView1 0x7f070018
 int id terrain 0x7f070003
-int id textView1 0x7f07001e
+int id textView1 0x7f070020
+int id textView2 0x7f070021
+int id textView3 0x7f070022
+int id textView4 0x7f070023
+int id textView5 0x7f070024
+int id videoView1 0x7f070026
 int id wrap_content 0x7f07000d
+int id zoomControls1 0x7f07001d
 int integer google_play_services_version 0x7f080000
 int layout activity_main 0x7f030000
 int layout activity_second 0x7f030001

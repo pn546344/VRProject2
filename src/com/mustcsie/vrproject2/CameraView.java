@@ -51,6 +51,15 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 	private float senserAngleData=0;
 	private final String PREFS_NAME="PICTURECOUNT";
 	private final String COUNT = "COUNT";
+	private float mLastX;                    //x軸體感(Sensor)偏移
+	private float mLastY;                    //y軸體感(Sensor)偏移
+	private float mLastZ;                    //z軸體感(Sensor)偏移
+	private double mSpeed;                 //甩動力道數度
+	private long mLastUpdateTime;           //觸發時間
+	//甩動力道數度設定值 (數值越大需甩動越大力，數值越小輕輕甩動即會觸發)
+	private static final int SPEED_SHRESHOLD = 800;
+	//觸發間隔時間
+	private static final int UPTATE_INTERVAL_TIME = 70;
 	public CameraView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
@@ -67,7 +76,7 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 		camera.startPreview();					//啟用相機擷取畫面
 		camera.autoFocus(this);					//自動對焦(只會對焦一次)
 		sm = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
-		sm.registerListener(this, sm.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_FASTEST);
+		sm.registerListener(this, sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_FASTEST);
 	}
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
@@ -86,6 +95,7 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 		// TODO Auto-generated method stub
 		camera.stopPreview();					//停止相機擷取畫面
 		camera.release();						//釋放相機資源
+		sm.unregisterListener(this);
 	}
 	@Override
 	public void onAutoFocus(boolean success, Camera camera) {
@@ -104,17 +114,43 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		// TODO Auto-generated method stub
-		if(event.sensor.getType() == Sensor.TYPE_ORIENTATION)
+		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && camera != null)
 		{
-			float degree = event.values[0];
-			float degree1 = event.values[1];
-			float degree2 = event.values[2];
-			if((senserAngleData != degree && (senserAngleData-degree<-30 || senserAngleData-degree>30)) && camera !=null)
-			   {
-				   senserAngleData = degree;
-				   Log.i("ddd", "Camera View degree"+degree);
-				  // camera.autoFocus(this);
-			   }
+			//當前觸發時間
+            long mCurrentUpdateTime = System.currentTimeMillis();
+            
+            //觸發間隔時間 = 當前觸發時間 - 上次觸發時間
+            long mTimeInterval = mCurrentUpdateTime - mLastUpdateTime;
+
+            //若觸發間隔時間< 70 則return;
+            if (mTimeInterval < UPTATE_INTERVAL_TIME) return;
+			
+            mLastUpdateTime = mCurrentUpdateTime;
+			//取得xyz體感(Sensor)偏移
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+          //甩動偏移速度 = xyz體感(Sensor)偏移 - 上次xyz體感(Sensor)偏移
+            float mDeltaX = x - mLastX;
+            float mDeltaY = y - mLastY;
+            float mDeltaZ = z - mLastZ;
+            mLastX = x;
+            mLastY = y;
+            mLastZ = z;
+            //體感(Sensor)甩動力道速度公式
+            mSpeed = Math.sqrt(mDeltaX * mDeltaX + mDeltaY * mDeltaY + mDeltaZ * mDeltaZ)/ mTimeInterval * 10000;
+			
+          //若體感(Sensor)甩動速度大於等於甩動設定值則進入 (達到甩動力道及速度)
+            if (mSpeed >= SPEED_SHRESHOLD)
+            {
+                    //達到搖一搖甩動後要做的事情
+            	camera.autoFocus(this);
+                    Log.i("fff","搖一搖中...");
+            } 
+            
+            
+            
+			//camera.autoFocus(this);
 		}
 	}
 
@@ -129,9 +165,6 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 		
 	}
 	
-	private void savePicture() {
-		
-	}
 	
 	private ShutterCallback shutter = new ShutterCallback() {
 		
@@ -173,10 +206,6 @@ public class CameraView extends SurfaceView implements Callback,AutoFocusCallbac
 			}
 			
 			String filename = "APP"+count+".jpg";
-			
-			
-			
-			
 			
 			String state = Environment.getExternalStorageState();
 			if (Environment.MEDIA_MOUNTED.equals(state)) {

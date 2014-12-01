@@ -1,8 +1,15 @@
 package com.mustcsie.vrproject2;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
+import android.accounts.Account;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
@@ -19,18 +26,22 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ZoomControls;
 
 public class SecondActivity extends Activity implements OnClickListener {
 	String bigPoint;
 	CameraView cView;
 	TagView tView;
-	TextView tvContent;
-	ImageView im,area1,area2,area3;
+	TextView tvContent , tvName , tvClass;
+	ImageView im,area1,area2,area3 , closeimage;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 	private boolean is_exit = false;
 	private boolean area1Close = false , area2Close = false , area3Close = false;
+	private ZoomControls zoomBar;
+	LinkedList<ImageItemButton> buttonDataList = new LinkedList<ImageItemButton>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +50,7 @@ public class SecondActivity extends Activity implements OnClickListener {
 		getWindow().setFlags(
         		WindowManager.LayoutParams.FLAG_FULLSCREEN,                  
         		WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.activity_second);
 		cView = (CameraView)findViewById(R.id.cameraView1);
 		tView = (TagView)findViewById(R.id.tagView1);
@@ -49,14 +61,19 @@ public class SecondActivity extends Activity implements OnClickListener {
 		area1 = (ImageView)findViewById(R.id.imageView2);
 		area2 = (ImageView)findViewById(R.id.imageView3);
 		area3 = (ImageView)findViewById(R.id.imageView4);
-		tvContent = (TextView)findViewById(R.id.textView1);
+		tvName = (TextView)findViewById(R.id.textView1);
+		tvContent = (TextView)findViewById(R.id.textView5);
+		tvClass = (TextView)findViewById(R.id.textView3);
+		closeimage = (ImageView)findViewById(R.id.imageView5);
+		zoomBar = (ZoomControls)findViewById(R.id.zoomControls1);
 		
 		
-		LinearLayout lLayout = (LinearLayout)findViewById(R.id.myLayout);
+		ScrollView lLayout = (ScrollView)findViewById(R.id.myLayout);
 		lLayout.setVisibility(View.GONE);
 		tView.setContentLayout(lLayout);
 		tView.setTextContent(tvContent);
-		
+		tView.setTextName(tvName);
+		tView.setTextClass(tvClass);
 		
 		
 		
@@ -64,19 +81,47 @@ public class SecondActivity extends Activity implements OnClickListener {
 		area1.setOnClickListener(this);
 		area2.setOnClickListener(this);
 		area3.setOnClickListener(this);
+		closeimage.setOnClickListener(this);
+		zoomBar.setOnZoomInClickListener(new View.OnClickListener(){
+			//比例尺放大
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Log.i("fff", "zoomin");
+				tView.setMatrixZoomIn();
+			}
+			
+		});
+		zoomBar.setOnZoomOutClickListener(new View.OnClickListener() {
+			//比例尺縮小
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Log.i("fff", "zoomout");
+				tView.setMatrixZoomOut();
+			}
+		});
+		
 		Intent intent = getIntent();
 		bigPoint = intent.getStringExtra("BigPoint");  //取得大項的名稱
 		GetSmallJson sJson = new GetSmallJson(bigPoint);
 		sJson.start();
+		GetImageButton gImageButton = new GetImageButton(bigPoint);
+		gImageButton.start();
 		try {
 			sJson.join();
+			gImageButton.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		dataList = sJson.getList();
-		tView.setTagDataList(dataList);
+		buttonDataList = gImageButton.getDataList();
 		
+		
+		area1.setImageBitmap(buttonDataList.getFirst().getEnableImage());
+		area2.setImageBitmap(buttonDataList.get(1).getEnableImage());
+		area3.setImageBitmap(buttonDataList.get(2).getEnableImage());
 		
 		DisplayMetrics metrics = new DisplayMetrics(); 
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -85,24 +130,31 @@ public class SecondActivity extends Activity implements OnClickListener {
         tView.setScanHeight(metrics.heightPixels);	//將螢幕高傳遞給tView
         tView.setScanWidth(metrics.widthPixels); 		//將螢幕寬傳遞給tView
         
-        tView.resume();
 		
 		
 	}
 	
 	@Override
+	protected void onResume() {
+		
+		tView.setTagDataList(dataList);
+		tView.resume();
+		super.onResume();
+	}
+	
+	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
-		tView.destory();
-		tView = null;
+		//活動暫停
+		tView.pause();
 		cView = null;
 		super.onPause();
 	}
 	
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		
+		// 活動銷毀
+		tView = null;
+		cView = null;
 		finish();
 		super.onDestroy();
 		
@@ -119,27 +171,30 @@ public class SecondActivity extends Activity implements OnClickListener {
 			tView.changeArea1State();
 			area1Close = !area1Close;
 			if(area1Close)
-				area1.setImageDrawable(getResources().getDrawable(R.drawable.button1false));
+				area1.setImageBitmap(buttonDataList.getFirst().getDisableImage());
 			else
-				area1.setImageDrawable(getResources().getDrawable(R.drawable.button1));
+				area1.setImageBitmap(buttonDataList.getFirst().getEnableImage());
 			break;
 		case R.id.imageView3:
 			tView.changeArea2State();
 			area2Close = !area2Close;
 			if(area2Close)
-				area2.setImageDrawable(getResources().getDrawable(R.drawable.button2false));
+				area2.setImageBitmap(buttonDataList.get(1).getDisableImage());
 			else 
-				area2.setImageDrawable(getResources().getDrawable(R.drawable.button2));
+				area2.setImageBitmap(buttonDataList.get(1).getEnableImage());
 			break;
 		case R.id.imageView4:
 			tView.changeArea3State();
 			area3Close = !area3Close;
 			if(area3Close)
-				area3.setImageDrawable(getResources().getDrawable(R.drawable.button3false));
+				area3.setImageBitmap(buttonDataList.get(2).getDisableImage());
 			else 
-				area3.setImageDrawable(getResources().getDrawable(R.drawable.button3));
+				area3.setImageBitmap(buttonDataList.get(2).getEnableImage());
 			break;
+		case R.id.imageView5:
+			tView.closeTextContent();
 		}
+		
 		
 	}
 	
@@ -174,18 +229,5 @@ public class SecondActivity extends Activity implements OnClickListener {
 	  return returnValue;
 	 }
 	
-	
-	
-	
-/*	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			Log.i("fff", "keydown back");
-			tView.closeTextContent();;
-			return false;
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-*/
+
 }
