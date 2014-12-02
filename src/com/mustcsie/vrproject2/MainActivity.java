@@ -2,6 +2,8 @@ package com.mustcsie.vrproject2;
 
 import java.text.BreakIterator;
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.google.android.gms.internal.lp;
 import com.google.android.gms.internal.ma;
@@ -29,10 +31,16 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.LinearLayout;
 
 public class MainActivity extends Activity implements OnMyLocationChangeListener, OnMarkerClickListener, SensorEventListener {
 	GoogleMap map;
@@ -45,6 +53,33 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 	private SensorManager sm;
 	private CameraPosition cp ;
 	private int count = 0;
+	private LinearLayout logoView;
+	private Timer timer = new Timer();
+	private TimerTask timerTask = new TimerTask() {
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+//			cancelLogoView();
+			Message msg = new Message();
+			msg.what = 1;
+			Handler.sendMessage(msg);
+			timerTask.cancel();
+		}
+	};
+	
+	private Handler Handler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case 1:
+				AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
+				alphaAnimation.setDuration(1000);
+				logoView.setVisibility(View.GONE);
+				logoView.startAnimation(alphaAnimation);
+				break;
+			}
+		};
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +97,8 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 //			Log.i("fff", "bestGPS ="+bestGPS);
 			
 //		}
+		
+		logoView = (LinearLayout)findViewById(R.id.logoView);
 		MapFragment frag=(MapFragment)getFragmentManager().findFragmentById(R.id.fragment1);
 		map=frag.getMap();
 		map.setMyLocationEnabled(true);
@@ -69,6 +106,7 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 		//LatLng l = new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude());
 		
 		sm = (SensorManager)getSystemService(SENSOR_SERVICE);
+		timer.schedule(timerTask, 2000);
 		
 	}
 	
@@ -194,5 +232,10 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 			   if(count ==0 && myLoc != null)
 				   startMapPoint();
 		}
+	}
+	
+	public void cancelLogoView() {
+		
+		timerTask.cancel();
 	}
 }

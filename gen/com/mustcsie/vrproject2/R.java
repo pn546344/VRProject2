@@ -412,18 +412,18 @@ containing a value of this type.
         public static final int ic_plusone_small_off_client=0x7f020023;
         public static final int ic_plusone_standard_off_client=0x7f020024;
         public static final int ic_plusone_tall_off_client=0x7f020025;
-        public static final int powered_by_google_dark=0x7f020026;
-        public static final int powered_by_google_light=0x7f020027;
+        public static final int logo=0x7f020026;
+        public static final int powered_by_google_dark=0x7f020027;
+        public static final int powered_by_google_light=0x7f020028;
     }
     public static final class id {
-        public static final int FrameLayout1=0x7f070016;
-        public static final int LinearLayout1=0x7f070014;
+        public static final int FrameLayout1=0x7f070014;
         public static final int action_settings=0x7f070027;
         public static final int book_now=0x7f070010;
         public static final int buyButton=0x7f07000a;
         public static final int buy_now=0x7f07000f;
         public static final int buy_with_google=0x7f07000e;
-        public static final int cameraView1=0x7f070017;
+        public static final int cameraView1=0x7f070018;
         public static final int classic=0x7f070011;
         public static final int fragment1=0x7f070015;
         public static final int gallery1=0x7f070025;
@@ -431,11 +431,12 @@ containing a value of this type.
         public static final int holo_dark=0x7f070005;
         public static final int holo_light=0x7f070006;
         public static final int hybrid=0x7f070004;
-        public static final int imageView1=0x7f070019;
+        public static final int imageView1=0x7f070017;
         public static final int imageView2=0x7f07001a;
         public static final int imageView3=0x7f07001b;
         public static final int imageView4=0x7f07001c;
         public static final int imageView5=0x7f07001f;
+        public static final int logoView=0x7f070016;
         public static final int match_parent=0x7f07000c;
         public static final int monochrome=0x7f070013;
         public static final int myLayout=0x7f07001e;
@@ -446,7 +447,7 @@ containing a value of this type.
         public static final int satellite=0x7f070002;
         public static final int selectionDetails=0x7f07000b;
         public static final int strict_sandbox=0x7f070009;
-        public static final int tagView1=0x7f070018;
+        public static final int tagView1=0x7f070019;
         public static final int terrain=0x7f070003;
         public static final int textView1=0x7f070020;
         public static final int textView2=0x7f070021;
