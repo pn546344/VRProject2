@@ -68,6 +68,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	final AlphaAnimation alphaAnimation = new AlphaAnimation(0.0f, 1.0f);
 	final AlphaAnimation alphaAnimation2 = new AlphaAnimation(1.0f, 0.0f);
 	private Matrix matrix = new Matrix();
+	private float startSensor = 0.0f;
+	private int zoom = 10;
 	
 	public TagView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -102,8 +104,10 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		// TODO Auto-generated method stub
 		latiude = loc.getLatitude();
 		longitude = loc.getLongitude();
-		myLoc.setLatitude(latiude);
-		myLoc.setLongitude(longitude);
+//		myLoc.setLatitude(latiude);
+//		myLoc.setLongitude(longitude);
+		myLoc.setLatitude(24.863918);
+		myLoc.setLongitude(120.988015);
 		Log.i("fff", "latiude ="+latiude);
 		Log.i("fff", "longitude ="+longitude);
 		
@@ -223,7 +227,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				loc.setLatitude(tag.getLatitude());
 				loc.setLongitude(tag.getLongitude());
 				angle = (int) (currentDegree-myLoc.bearingTo(loc));
-				float dest =  myLoc.distanceTo(loc)*10;
+				float dest =  myLoc.distanceTo(loc)*zoom;
 				int w = tagImage.getWidth();
 				int h = tagImage.getHeight();
 				tagImage = Bitmap.createBitmap(tagImage,0,0,w,h,matrix,true);
@@ -289,6 +293,15 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		// 傳感器報告新的值(方向改變)
 		if (arg0.sensor.getType() == Sensor.TYPE_ORIENTATION) {
 			   float degree = arg0.values[0];
+			   float result = 0.0f;
+			   startSensor = degree;
+			   if (degree - startSensor < 0) {
+				result = (degree - startSensor)*-1;
+			}else
+				result = degree - startSensor;
+			//   if (result > 5) {  
+				//如果晃動沒有超過30度,不動作
+			//	   startSensor = arg0.values[0]	;
 			   if(senserAngleData != degree && (senserAngleData-degree<-30 || senserAngleData-degree>30))
 			   {
 				   
@@ -317,7 +330,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			   currentDegree = degree+90; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
 			   if(currentDegree<=-360)
 				   currentDegree = currentDegree+360;
-		}
+			   }
+	//	}
 	}
 	
 	public void setScanHeight(int heightPixels) {
@@ -380,5 +394,9 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	
 	public void setMatrixZoomOut() {
 		matrix.postScale(0.5f, 0.5f);
+	}
+	public void setZoom(int x) {
+		//x傳入的值範圍1~10
+		zoom = 11-x;
 	}
 }

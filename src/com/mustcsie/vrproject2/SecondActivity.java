@@ -29,23 +29,24 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ZoomControls;
 
-public class SecondActivity extends Activity implements OnClickListener {
+public class SecondActivity extends Activity implements OnClickListener, OnSeekBarChangeListener {
 	String bigPoint;
 	CameraView cView;
 	TagView tView;
 	TextView tvContent , tvName , tvClass;
-	ImageView im,area1,area2,area3 , closeimage , backButton;
+	ImageView im,area1 , closeimage ;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 	private boolean is_exit = false;
 	private boolean area1Close = false , area2Close = false , area3Close = false;
-	private ZoomControls zoomBar;
-	LinkedList<ImageItemButton> buttonDataList = new LinkedList<ImageItemButton>();
-	LinearLayout propertyLayout;
 	float upX , upY , downX , downY;
+	SeekBar seekBar;
+	ScrollView propertyView ;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,18 +68,16 @@ public class SecondActivity extends Activity implements OnClickListener {
 //		tView.setZOrderOnTop(true);
 		tView.setZOrderMediaOverlay(true);
 		im = (ImageView)findViewById(R.id.imageView1);
-		area1 = (ImageView)findViewById(R.id.imageView2);
-		area2 = (ImageView)findViewById(R.id.imageView3);
-		area3 = (ImageView)findViewById(R.id.imageView4);
+//		area1 = (ImageView)findViewById(R.id.imageView2);
 		tvName = (TextView)findViewById(R.id.textView1);
 		tvContent = (TextView)findViewById(R.id.textView5);
 		tvClass = (TextView)findViewById(R.id.textView3);
 		closeimage = (ImageView)findViewById(R.id.imageView5);
-		zoomBar = (ZoomControls)findViewById(R.id.zoomControls1);
-		backButton = (ImageView)findViewById(R.id.backButton);
-		//屬性欄的Layout變數
-		propertyLayout = (LinearLayout)findViewById(R.id.propertyLayout);
-		propertyLayout.setVisibility(View.GONE);  //預設一開始時不顯示
+		seekBar = (SeekBar)findViewById(R.id.seekBar1);
+		propertyView = (ScrollView)findViewById(R.id.scrollView1);
+		
+		
+		
 		
 		
 		ScrollView lLayout = (ScrollView)findViewById(R.id.myLayout);
@@ -87,35 +86,16 @@ public class SecondActivity extends Activity implements OnClickListener {
 		tView.setTextContent(tvContent);
 		tView.setTextName(tvName);
 		tView.setTextClass(tvClass);
-		
+		seekBar.setOnSeekBarChangeListener(this);
+		propertyView.setVisibility(View.GONE);
 		
 		
 		im.setOnClickListener(this);
-		area1.setOnClickListener(this);
-		area2.setOnClickListener(this);
-		area3.setOnClickListener(this);
+//		area1.setOnClickListener(this);
+	
 		closeimage.setOnClickListener(this);
-		zoomBar.setOnZoomInClickListener(new View.OnClickListener(){
-			//比例尺放大
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				Log.i("fff", "zoomin");
-				tView.setMatrixZoomIn();
-			}
-			
-		});
-		zoomBar.setOnZoomOutClickListener(new View.OnClickListener() {
-			//比例尺縮小
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Log.i("fff", "zoomout");
-				tView.setMatrixZoomOut();
-			}
-		});
 		
-		backButton.setOnClickListener(this);
+		
 		
 		
 		
@@ -123,22 +103,14 @@ public class SecondActivity extends Activity implements OnClickListener {
 		bigPoint = intent.getStringExtra("BigPoint");  //取得大項的名稱
 		GetSmallJson sJson = new GetSmallJson(bigPoint);
 		sJson.start();
-		GetImageButton gImageButton = new GetImageButton(bigPoint);
-		gImageButton.start();
 		try {
 			sJson.join();
-			gImageButton.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		dataList = sJson.getList();
-		buttonDataList = gImageButton.getDataList();
 		
-		
-//		area1.setImageBitmap(buttonDataList.getFirst().getEnableImage());
-//		area2.setImageBitmap(buttonDataList.get(1).getEnableImage());
-//		area3.setImageBitmap(buttonDataList.get(2).getEnableImage());
 		
 		DisplayMetrics metrics = new DisplayMetrics(); 
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -183,37 +155,11 @@ public class SecondActivity extends Activity implements OnClickListener {
 		case R.id.imageView1:
 			cView.takePicture();
 			break;
-		case R.id.imageView2:
-			tView.changeArea1State();
-			area1Close = !area1Close;
-			/*if(area1Close)
-				area1.setImageBitmap(buttonDataList.getFirst().getDisableImage());
-			else
-				area1.setImageBitmap(buttonDataList.getFirst().getEnableImage());
-			*/
-			propertyLayout.setVisibility(View.VISIBLE);
-			break;
-		case R.id.imageView3:
-			tView.changeArea2State();
-			area2Close = !area2Close;
-			if(area2Close)
-				area2.setImageBitmap(buttonDataList.get(1).getDisableImage());
-			else 
-				area2.setImageBitmap(buttonDataList.get(1).getEnableImage());
-			break;
-		case R.id.imageView4:
-			tView.changeArea3State();
-			area3Close = !area3Close;
-			if(area3Close)
-				area3.setImageBitmap(buttonDataList.get(2).getDisableImage());
-			else 
-				area3.setImageBitmap(buttonDataList.get(2).getEnableImage());
-			break;
+	
+
 		case R.id.imageView5:
 			tView.closeTextContent();
 			break;
-		case R.id.backButton:
-			propertyLayout.setVisibility(View.GONE);
 		}
 		
 	}
@@ -229,13 +175,13 @@ public class SecondActivity extends Activity implements OnClickListener {
 			downY = event.getY();
 			Log.i("ttt", "downX = "+downX);
 			Log.i("ttt", "downY = "+downY);
-			break;
+			return true;
 		case MotionEvent.ACTION_UP:
 			upX = event.getX();
 			upY = event.getY();
 			Log.i("ttt", "UPX = "+xx);
 			Log.i("ttt", "UpY = "+yy);
-			
+			return true;
 		case MotionEvent.ACTION_MOVE:
 			Log.d("onTouchEvent-ACTION_UP","UP");
             upX = event.getX();
@@ -252,16 +198,19 @@ public class SecondActivity extends Activity implements OnClickListener {
             }else if(upX < downX && jiaodu<=45) {//左
                 Log.d("onTouchEvent-ACTION_UP","角度:"+jiaodu+", 動作:左");
                 // 原方向不是向右時，方向轉右
-                propertyLayout.setVisibility(View.GONE);
+                if(downX >= 0 && downX <800)
+                	propertyView.setVisibility(View.GONE);
             }else if(upX > downX && jiaodu<=45) {//右
                 Log.d("onTouchEvent-ACTION_UP","角度:"+jiaodu+", 動作:右");
-                // 原方向不是向左時，方向轉右
-                if(downX == 0)
-                    propertyLayout.setVisibility(View.VISIBLE);
+                // 原方向不是向左時，方向向右
+                if(downX >= 0 && downX <100)
+                	propertyView.setVisibility(View.VISIBLE);
             }
-
+            
+            return true;
 		}
-		return super.onTouchEvent(event);
+//		return super.onTouchEvent(event);
+		return true;
 	}
 	
 	@Override
@@ -294,6 +243,28 @@ public class SecondActivity extends Activity implements OnClickListener {
 	  }
 	  return returnValue;
 	 }
+
+	@Override
+	public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+		// TODO Auto-generated method stub
+		TextView tv = (TextView)findViewById(R.id.textView7);
+		if(arg1 == 0)
+			arg1 = 1;
+		tv.setText(arg1*100+"M");
+		tView.setZoom(arg1);
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar arg0) {
+		// 當SeekBar被使用者點選做調整時,此方法會被執行
+		
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar arg0) {
+		// 當SeekBar被使用者停止調整時,此方法會被執行
+		
+	}
 	
 
 }
