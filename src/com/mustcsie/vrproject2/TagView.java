@@ -150,13 +150,13 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 					str = dataList.get(i).getContent();		//抓取按下目標的內容文字
 					String str1 = "";
 					str1 = dataList.get(i).getName();
-					String strClass="" ;
-					strClass = dataList.get(i).getArea();
+//					String strClass="" ;
+//					strClass = dataList.get(i).getArea();
 					
 					
 					tv.setText(str);  //設定簡介文字
 					tvName.setText(str1);
-					tvClass.setText(strClass);
+//					tvClass.setText(strClass);
 					alphaAnimation.setDuration(1000);
 					contentLayout.startAnimation(alphaAnimation);
 					contentLayout.setVisibility(View.VISIBLE);
@@ -183,7 +183,6 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		Log.i("fff", "scanWidth="+scanWidth);
 		while(!loopStop)
 		{
-			
 			if(!holder.getSurface().isValid())
 				continue;
 				
@@ -204,7 +203,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			{
 				tag = dataList.get(i);
 				
-				//設定是否顯示圖層
+			/*	作廢
+			 * //設定是否顯示圖層
 				String areaNO = tag.getArea();				
 				if (areaNO.equals("0") && !area1) {
 					tagDetailList.get(i).setIsSurvival(false);
@@ -215,7 +215,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				}else if (areaNO.equals("2") && !area3) {
 					tagDetailList.get(i).setIsSurvival(false);
 					continue;
-				}
+				}*/
 				
 				Bitmap tagImage = tag.getImage();
 				if(tagImage == null)

@@ -33,6 +33,7 @@ public class GetSmallJson extends Thread{
 	}
 	
 	public LinkedList<TagData> getList() {
+		Log.i("ttt", "GetSmallJson dataList size = "+dataList.size());
 		return dataList;
 	}
 	
@@ -44,6 +45,7 @@ public class GetSmallJson extends Thread{
 			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 			if(connection.getResponseCode()==HttpURLConnection.HTTP_OK)
 			{
+				Log.i("ttt", "GetSmallJson is connection");
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(connection.getInputStream(), "utf-8"));
 				String str;
@@ -64,11 +66,11 @@ public class GetSmallJson extends Thread{
 					content 	= 	json.getString("Device_Content");
 					latitude 	= 	json.getDouble("Device_Latitude");
 					longitude 	= 	json.getDouble("Device_Longitude");
-					area 		= 	json.getString("Area_ID");
 					SmallBitmap sBitmap = new SmallBitmap(json.getString("Device_Images"));
 					bitmap = sBitmap.getBitmap();
-					TagData tData = new TagData(name, content, latitude, longitude, bitmap , area);
+					TagData tData = new TagData(name, content, latitude, longitude, bitmap);
 					dataList.add(tData);
+					Log.i("ttt", "datalist now is = "+dataList.size());
 					Log.i("fff", "Device_Name = "+name+"url = "+json.getString("Device_Images"));
 				}
 			}
@@ -87,6 +89,7 @@ public class GetSmallJson extends Thread{
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Log.i("ttt", "Json");
 		}
 		super.run();
 	}

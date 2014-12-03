@@ -17,9 +17,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.MonthDisplayHelper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -36,25 +38,32 @@ public class SecondActivity extends Activity implements OnClickListener {
 	CameraView cView;
 	TagView tView;
 	TextView tvContent , tvName , tvClass;
-	ImageView im,area1,area2,area3 , closeimage;
+	ImageView im,area1,area2,area3 , closeimage , backButton;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 	private boolean is_exit = false;
 	private boolean area1Close = false , area2Close = false , area3Close = false;
 	private ZoomControls zoomBar;
 	LinkedList<ImageItemButton> buttonDataList = new LinkedList<ImageItemButton>();
-
+	LinearLayout propertyLayout;
+	float upX , upY , downX , downY;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		//設定顯示畫面(全螢幕)
 		getWindow().setFlags(
         		WindowManager.LayoutParams.FLAG_FULLSCREEN,                  
         		WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
 		setContentView(R.layout.activity_second);
-		cView = (CameraView)findViewById(R.id.cameraView1);
-		tView = (TagView)findViewById(R.id.tagView1);
-		tView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+		
+		//宣告變數
+		cView = (CameraView)findViewById(R.id.cameraView1);  //照相機
+		tView = (TagView)findViewById(R.id.tagView1);		//畫圖畫面
+		tView.getHolder().setFormat(PixelFormat.TRANSLUCENT);	//設置畫面背景為透明
 //		tView.setZOrderOnTop(true);
 		tView.setZOrderMediaOverlay(true);
 		im = (ImageView)findViewById(R.id.imageView1);
@@ -66,6 +75,10 @@ public class SecondActivity extends Activity implements OnClickListener {
 		tvClass = (TextView)findViewById(R.id.textView3);
 		closeimage = (ImageView)findViewById(R.id.imageView5);
 		zoomBar = (ZoomControls)findViewById(R.id.zoomControls1);
+		backButton = (ImageView)findViewById(R.id.backButton);
+		//屬性欄的Layout變數
+		propertyLayout = (LinearLayout)findViewById(R.id.propertyLayout);
+		propertyLayout.setVisibility(View.GONE);  //預設一開始時不顯示
 		
 		
 		ScrollView lLayout = (ScrollView)findViewById(R.id.myLayout);
@@ -102,6 +115,10 @@ public class SecondActivity extends Activity implements OnClickListener {
 			}
 		});
 		
+		backButton.setOnClickListener(this);
+		
+		
+		
 		Intent intent = getIntent();
 		bigPoint = intent.getStringExtra("BigPoint");  //取得大項的名稱
 		GetSmallJson sJson = new GetSmallJson(bigPoint);
@@ -119,9 +136,9 @@ public class SecondActivity extends Activity implements OnClickListener {
 		buttonDataList = gImageButton.getDataList();
 		
 		
-		area1.setImageBitmap(buttonDataList.getFirst().getEnableImage());
-		area2.setImageBitmap(buttonDataList.get(1).getEnableImage());
-		area3.setImageBitmap(buttonDataList.get(2).getEnableImage());
+//		area1.setImageBitmap(buttonDataList.getFirst().getEnableImage());
+//		area2.setImageBitmap(buttonDataList.get(1).getEnableImage());
+//		area3.setImageBitmap(buttonDataList.get(2).getEnableImage());
 		
 		DisplayMetrics metrics = new DisplayMetrics(); 
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -136,7 +153,6 @@ public class SecondActivity extends Activity implements OnClickListener {
 	
 	@Override
 	protected void onResume() {
-		
 		tView.setTagDataList(dataList);
 		tView.resume();
 		super.onResume();
@@ -170,10 +186,12 @@ public class SecondActivity extends Activity implements OnClickListener {
 		case R.id.imageView2:
 			tView.changeArea1State();
 			area1Close = !area1Close;
-			if(area1Close)
+			/*if(area1Close)
 				area1.setImageBitmap(buttonDataList.getFirst().getDisableImage());
 			else
 				area1.setImageBitmap(buttonDataList.getFirst().getEnableImage());
+			*/
+			propertyLayout.setVisibility(View.VISIBLE);
 			break;
 		case R.id.imageView3:
 			tView.changeArea2State();
@@ -193,9 +211,57 @@ public class SecondActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.imageView5:
 			tView.closeTextContent();
+			break;
+		case R.id.backButton:
+			propertyLayout.setVisibility(View.GONE);
 		}
 		
-		
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		// TODO Auto-generated method stub
+		float xx = event.getX();
+		float yy = event.getY();
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			downX = event.getX();
+			downY = event.getY();
+			Log.i("ttt", "downX = "+downX);
+			Log.i("ttt", "downY = "+downY);
+			break;
+		case MotionEvent.ACTION_UP:
+			upX = event.getX();
+			upY = event.getY();
+			Log.i("ttt", "UPX = "+xx);
+			Log.i("ttt", "UpY = "+yy);
+			
+		case MotionEvent.ACTION_MOVE:
+			Log.d("onTouchEvent-ACTION_UP","UP");
+            upX = event.getX();
+            upY = event.getY();
+            float x=Math.abs(upX-downX);
+            float y=Math.abs(upY-downY);
+            double z=Math.sqrt(x*x+y*y);
+            int jiaodu=Math.round((float)(Math.asin(y/z)/Math.PI*180));//角度
+             
+            if (upY < downY && jiaodu>45) {//上
+                Log.d("onTouchEvent-ACTION_UP","角度:"+jiaodu+", 動作:上");
+            }else if(upY > downY && jiaodu>45) {//下
+                Log.d("onTouchEvent-ACTION_UP","角度:"+jiaodu+", 動作:下");
+            }else if(upX < downX && jiaodu<=45) {//左
+                Log.d("onTouchEvent-ACTION_UP","角度:"+jiaodu+", 動作:左");
+                // 原方向不是向右時，方向轉右
+                propertyLayout.setVisibility(View.GONE);
+            }else if(upX > downX && jiaodu<=45) {//右
+                Log.d("onTouchEvent-ACTION_UP","角度:"+jiaodu+", 動作:右");
+                // 原方向不是向左時，方向轉右
+                if(downX == 0)
+                    propertyLayout.setVisibility(View.VISIBLE);
+            }
+
+		}
+		return super.onTouchEvent(event);
 	}
 	
 	@Override

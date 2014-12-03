@@ -85,26 +85,25 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		//刪除ActionBar
 		ActionBar bar = getActionBar();
 		bar.hide();
+		
+		//設定螢幕顯示範圍(只留狀態欄)
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		lManager = (LocationManager)getSystemService(LOCATION_SERVICE);
-//		Criteria criteria = new Criteria();
-//		criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-//		bestGPS = lManager.getBestProvider(criteria, true);
-//		if (bestGPS != null) {
-//			loc = lManager.getLastKnownLocation(bestGPS);
-//			Log.i("fff", "bestGPS ="+bestGPS);
-			
-//		}
+
 		
 		logoView = (LinearLayout)findViewById(R.id.logoView);
+		
+		//設定google map
 		MapFragment frag=(MapFragment)getFragmentManager().findFragmentById(R.id.fragment1);
 		map=frag.getMap();
 		map.setMyLocationEnabled(true);
 		map.setOnMyLocationChangeListener(this);
-		//LatLng l = new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude());
 		
+		//取用感應器服務(sensor)
 		sm = (SensorManager)getSystemService(SENSOR_SERVICE);
 		timer.schedule(timerTask, 2000);
 		
@@ -164,6 +163,7 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 		LatLng latlng;
 		BigPoint bigPoint;
 		for (int i = 0; i < list.size(); i++) {
+			//從網路上取得大項資料
 			bigPoint = list.get(i);
 			latlng = new LatLng(bigPoint.getLatitude(), bigPoint.getLongitude());
 //			Log.i("ttt", "bigPoint.getLatitude = "+bigPoint.getLatitude());
@@ -186,11 +186,7 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 		CameraUpdate update=CameraUpdateFactory.newLatLng(loc);
 		map.moveCamera(update);
 		BitmapDescriptor icon=BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher);
-	/*	MarkerOptions marker=new MarkerOptions();
-		marker.icon(icon);
-		marker.title(loc+"");
-		marker.position(loc);
-		map.addMarker(marker);*/
+
 	}
 
 	@Override
@@ -211,31 +207,25 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 
 	@Override
 	public void onSensorChanged(SensorEvent arg0) {
-		// TODO Auto-generated method stub
+		// 當感應器的值產生變化的時候
 		if (arg0.sensor.getType() == Sensor.TYPE_ORIENTATION) {
+			   //如果感應器是羅盤的話(指北針)
 			   float degree = arg0.values[0];
 
 			   float currentDegree = degree+90; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
 			   if(currentDegree<=-360)
 				   currentDegree = currentDegree+360;
-			   Location getMyLocation = map.getMyLocation();
 			   myLoc = map.getMyLocation();
-			   if (getMyLocation == null) {
-				   Log.i("fff", "getMyLocation is null");
-			   }else 
-			   { 
-				   LatLng myLatLng = new LatLng(getMyLocation.getLatitude(), getMyLocation.getLongitude());
+			   if ( myLoc != null) {
+				   //如果GPS不是空值
+				   LatLng myLatLng = new LatLng(myLoc.getLatitude(), myLoc.getLongitude());
 				   cp = new CameraPosition(myLatLng, map.getCameraPosition().zoom, 0, currentDegree);
 				   map.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
-				   
-			}
+			   }
+			   
 			   if(count ==0 && myLoc != null)
 				   startMapPoint();
 		}
 	}
 	
-	public void cancelLogoView() {
-		
-		timerTask.cancel();
-	}
 }
