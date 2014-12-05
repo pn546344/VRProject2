@@ -147,6 +147,7 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 				gbJson.join();
 				item = gbJson.getItem();
 				list = gbJson.getBigJsonData();
+				Log.i("fff","datasize ===== "+list.size());
 				makerTag();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

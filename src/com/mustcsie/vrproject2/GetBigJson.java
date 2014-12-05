@@ -51,6 +51,7 @@ public class GetBigJson extends	Thread{
 				{
 					result = result +str;
 				}
+				Log.i("fff", "bigjson = "+result);
 				reader.close();
 				connection.disconnect();
 				
@@ -73,13 +74,16 @@ public class GetBigJson extends	Thread{
 			}
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
+			Log.i("fff", "json error3");
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Log.i("fff", "json error2");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Log.i("fff", "json error");
 		}
 		super.run();
 	}

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import android.R.animator;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
@@ -26,6 +27,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -40,13 +43,14 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	CameraView cView;
 	TagView tView;
 	TextView tvContent , tvName , tvClass;
-	ImageView im,area1 , closeimage ;
+	ImageView im,backProperty , closeimage ;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 	private boolean is_exit = false;
 	private boolean area1Close = false , area2Close = false , area3Close = false;
 	float upX , upY , downX , downY;
 	SeekBar seekBar;
 	ScrollView propertyView ;
+	LinearLayout propertyLinearView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,16 +72,14 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 //		tView.setZOrderOnTop(true);
 		tView.setZOrderMediaOverlay(true);
 		im = (ImageView)findViewById(R.id.imageView1);
-//		area1 = (ImageView)findViewById(R.id.imageView2);
 		tvName = (TextView)findViewById(R.id.textView1);
 		tvContent = (TextView)findViewById(R.id.textView5);
 		tvClass = (TextView)findViewById(R.id.textView3);
 		closeimage = (ImageView)findViewById(R.id.imageView5);
 		seekBar = (SeekBar)findViewById(R.id.seekBar1);
-		propertyView = (ScrollView)findViewById(R.id.scrollView1);
-		
-		
-		
+		propertyView = (ScrollView)findViewById(R.id.scrollView1); //屬性視窗變數
+		propertyLinearView = (LinearLayout)findViewById(R.id.propertyLayout);
+		backProperty = (ImageView)findViewById(R.id.imageView2);
 		
 		
 		ScrollView lLayout = (ScrollView)findViewById(R.id.myLayout);
@@ -88,11 +90,12 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		tView.setTextClass(tvClass);
 		seekBar.setOnSeekBarChangeListener(this);
 		propertyView.setVisibility(View.GONE);
+		TextView abc = new TextView(this);
+		abc.setText("abc");
 		
-		
+		propertyLinearView.addView(abc);
 		im.setOnClickListener(this);
-//		area1.setOnClickListener(this);
-	
+		backProperty.setOnClickListener(this);
 		closeimage.setOnClickListener(this);
 		
 		
@@ -155,7 +158,12 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		case R.id.imageView1:
 			cView.takePicture();
 			break;
-	
+		case R.id.imageView2:
+			Animation am = new TranslateAnimation(0, -500, 0, 0);
+			am.setDuration(200);
+			propertyView.setAnimation(am);
+			propertyView.setVisibility(View.GONE);
+			break;
 
 		case R.id.imageView5:
 			tView.closeTextContent();
@@ -198,13 +206,22 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
             }else if(upX < downX && jiaodu<=45) {//左
                 Log.d("onTouchEvent-ACTION_UP","角度:"+jiaodu+", 動作:左");
                 // 原方向不是向右時，方向轉右
-                if(downX >= 0 && downX <800)
-                	propertyView.setVisibility(View.GONE);
+                if(downX >= 0 && downX <800){
+                	Animation am = new TranslateAnimation(0, -500, 0, 0);
+        			am.setDuration(200);
+        			propertyView.setAnimation(am);
+        			propertyView.setVisibility(View.GONE);
+                }
             }else if(upX > downX && jiaodu<=45) {//右
                 Log.d("onTouchEvent-ACTION_UP","角度:"+jiaodu+", 動作:右");
                 // 原方向不是向左時，方向向右
-                if(downX >= 0 && downX <100)
-                	propertyView.setVisibility(View.VISIBLE);
+                if(downX >= 0 && downX <100){
+                	Animation am = new TranslateAnimation(-500, 0, 0, 0);
+        			am.setDuration(200);
+        			propertyView.setAnimation(am);
+        			propertyView.setVisibility(View.VISIBLE);
+                }
+                	
             }
             
             return true;
