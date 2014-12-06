@@ -4,6 +4,11 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -12,7 +17,10 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,8 +37,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -45,6 +56,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	TextView tvContent , tvName , tvClass;
 	ImageView im,backProperty , closeimage ;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
+	LinkedList<PropertyData> propertyList = new LinkedList<PropertyData>();
 	private boolean is_exit = false;
 	private boolean area1Close = false , area2Close = false , area3Close = false;
 	float upX , upY , downX , downY;
@@ -72,6 +84,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 //		tView.setZOrderOnTop(true);
 		tView.setZOrderMediaOverlay(true);
 		im = (ImageView)findViewById(R.id.imageView1);
+		im.setVisibility(View.GONE);
 		tvName = (TextView)findViewById(R.id.textView1);
 		tvContent = (TextView)findViewById(R.id.textView5);
 		tvClass = (TextView)findViewById(R.id.textView3);
@@ -79,7 +92,6 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		seekBar = (SeekBar)findViewById(R.id.seekBar1);
 		propertyView = (ScrollView)findViewById(R.id.scrollView1); //屬性視窗變數
 		propertyLinearView = (LinearLayout)findViewById(R.id.propertyLayout);
-		backProperty = (ImageView)findViewById(R.id.imageView2);
 		
 		
 		ScrollView lLayout = (ScrollView)findViewById(R.id.myLayout);
@@ -90,12 +102,8 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		tView.setTextClass(tvClass);
 		seekBar.setOnSeekBarChangeListener(this);
 		propertyView.setVisibility(View.GONE);
-		TextView abc = new TextView(this);
-		abc.setText("abc");
 		
-		propertyLinearView.addView(abc);
 		im.setOnClickListener(this);
-		backProperty.setOnClickListener(this);
 		closeimage.setOnClickListener(this);
 		
 		
@@ -105,14 +113,37 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		Intent intent = getIntent();
 		bigPoint = intent.getStringExtra("BigPoint");  //取得大項的名稱
 		GetSmallJson sJson = new GetSmallJson(bigPoint);
+		GetPropertyJson propertyJson = new GetPropertyJson(bigPoint);
+		propertyJson.start();
 		sJson.start();
 		try {
 			sJson.join();
+			propertyJson.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		dataList = sJson.getList();
+		propertyList = propertyJson.getList();  //取得屬性資料
+		
+		for (int i = 0; i < propertyList.size(); i++) {
+			TextView abc = new TextView(this);
+			abc.setText(propertyList.get(i).getName());
+			abc.setTextSize(20);
+			ImageButton ibutton = new ImageButton(this);
+			String url = propertyList.get(i).getOnUrl();
+//			SmallBitmap pBitmap = new SmallBitmap(url);
+			ibutton.setImageResource(R.drawable.logo);
+//			ibutton.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
+//			ibutton.setImageBitmap(pBitmap.getBitmap());
+			ibutton.setAdjustViewBounds(true);
+			ibutton.setMaxHeight(300);
+			ibutton.setMaxWidth(300);
+			propertyLinearView.addView(abc);
+			propertyLinearView.addView(ibutton);
+				
+		}
+		
 		
 		
 		DisplayMetrics metrics = new DisplayMetrics(); 
@@ -157,12 +188,6 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		switch (arg0.getId()) {
 		case R.id.imageView1:
 			cView.takePicture();
-			break;
-		case R.id.imageView2:
-			Animation am = new TranslateAnimation(0, -500, 0, 0);
-			am.setDuration(200);
-			propertyView.setAnimation(am);
-			propertyView.setVisibility(View.GONE);
 			break;
 
 		case R.id.imageView5:
