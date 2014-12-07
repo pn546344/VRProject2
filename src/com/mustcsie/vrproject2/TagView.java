@@ -3,6 +3,7 @@ package com.mustcsie.vrproject2;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
+import com.google.android.gms.internal.bu;
 import com.google.android.gms.internal.ho;
 
 import android.app.AlertDialog;
@@ -57,6 +58,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private SensorManager sm ; // 方向感應器 
 	private float currentDegree = 0f;  //電子羅盤角度變數
 	private LinkedList<TagData> dataList;
+	private LinkedList<ButtonStatus> buttonStatus;
 	private Canvas canvas;
 	private TagData tag ;
 	private float senserAngleData=0;
@@ -228,6 +230,27 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 					tagDetailList.get(i).setIsSurvival(false);
 					continue;
 				}*/
+				String[] property = tag.getStr();
+				boolean jump = false;
+				for (int j = 0 , k = 0; j < buttonStatus.size(); j++) {
+					Log.i("ttt", "size = "+buttonStatus.size())	;
+					for (int j2 = 0; j2 < property.length; j2++) {
+						if (buttonStatus.get(j).getName().equals(property[j2]) 
+								&&
+								!buttonStatus.get(j).getStatus()) {
+//							jump = true;
+							k++;
+						}
+					}
+					if(k == property.length)
+					{
+						jump= true;
+					}
+				}
+				
+				if (jump) {
+					continue;
+				}
 				
 				Bitmap tagImage = tag.getImage();
 				if(tagImage == null)
@@ -407,4 +430,9 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		//x傳入的值範圍1~10
 		zoom = 11-x;
 	}
+	public void setButtonStatusList(LinkedList<ButtonStatus> list) {
+		buttonStatus = list;
+		Log.d("ttt","change");
+	}
 }
+

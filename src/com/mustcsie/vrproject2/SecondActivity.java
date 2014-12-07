@@ -62,7 +62,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	TextView tvContent , tvName , tvClass;
 	ImageView im,backProperty , closeimage;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
-	LinkedList<Boolean> buttonlist = new LinkedList<Boolean>(); //屬性欄button的狀態
+	LinkedList<ButtonStatus> buttonlist = new LinkedList<ButtonStatus>(); //屬性欄button的狀態
 	LinkedList<PropertyData> propertyList = new LinkedList<PropertyData>();
 	private boolean is_exit = false;
 	private boolean area1Close = false , area2Close = false , area3Close = false;
@@ -139,7 +139,8 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 			abc.setTextSize(20);
 			final ImageView ibutton = new ImageView(this);
 			ibutton.setImageBitmap(propertyList.get(i).getOnBitmap());
-			buttonlist.add(true);
+			ButtonStatus bStatus = new ButtonStatus(propertyList.get(i).getName(), true);
+			buttonlist.add(bStatus);
 			ibutton.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
 			ibutton.setAdjustViewBounds(true);
 			ibutton.setMaxHeight(200);
@@ -151,14 +152,16 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
 					Log.i("ttt", "id = "+v.getId());
-					if (buttonlist.get(v.getId()) == true) {
+					if (buttonlist.get(v.getId()).getStatus() == true) {
 						ibutton.setImageBitmap(propertyList.get(v.getId()).getOffBitmap());
-						buttonlist.set(v.getId(), false);
+						buttonlist.get(v.getId()).setStatus();
+						tView.setButtonStatusList(buttonlist);
 					}
 					else
 					{
 						ibutton.setImageBitmap(propertyList.get(v.getId()).getOnBitmap());
-						buttonlist.set(v.getId(), true);
+						buttonlist.get(v.getId()).setStatus();
+						tView.setButtonStatusList(buttonlist);
 					}
 					
 				}
@@ -178,7 +181,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
         tView.setScanHeight(metrics.heightPixels);	//將螢幕高傳遞給tView
         tView.setScanWidth(metrics.widthPixels); 		//將螢幕寬傳遞給tView
         
-		
+		tView.setButtonStatusList(buttonlist);
 		
 	}
 	
@@ -219,17 +222,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 			tView.closeTextContent();
 			break;
 			
-		/*case 0:
-			Log.i("fff", "按下0");
-			break;
-			
-		case 1:
-			Log.i("fff", "按下0");
-			break;
-			
-		case 2:
-			Log.i("fff", "按下0");
-			break;*/
+	
 		}
 	}
 	
