@@ -216,29 +216,13 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			for(int i=0;i<dataList.size();i++)
 			{
 				tag = dataList.get(i);
-				
-			/*	作廢
-			 * //設定是否顯示圖層
-				String areaNO = tag.getArea();				
-				if (areaNO.equals("0") && !area1) {
-					tagDetailList.get(i).setIsSurvival(false);
-					continue;
-				}else if(areaNO.equals("1") && !area2){
-					tagDetailList.get(i).setIsSurvival(false);
-					continue;
-				}else if (areaNO.equals("2") && !area3) {
-					tagDetailList.get(i).setIsSurvival(false);
-					continue;
-				}*/
 				String[] property = tag.getStr();
 				boolean jump = false;
 				for (int j = 0 , k = 0; j < buttonStatus.size(); j++) {
-					Log.i("ttt", "size = "+buttonStatus.size())	;
 					for (int j2 = 0; j2 < property.length; j2++) {
 						if (buttonStatus.get(j).getName().equals(property[j2]) 
 								&&
 								!buttonStatus.get(j).getStatus()) {
-//							jump = true;
 							k++;
 						}
 					}
@@ -249,7 +233,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				}
 				
 				if (jump) {
-					continue;
+					continue;  //不畫此圖
 				}
 				
 				Bitmap tagImage = tag.getImage();
@@ -258,6 +242,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				loc.setLatitude(tag.getLatitude());
 				loc.setLongitude(tag.getLongitude());
 				angle = (int) (currentDegree-myLoc.bearingTo(loc));
+//				float dest =  myLoc.distanceTo(loc)*10;
 				float dest =  myLoc.distanceTo(loc)*zoom;
 				int w = tagImage.getWidth();
 				int h = tagImage.getHeight();
@@ -375,21 +360,6 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		scanWidth = widthPixels;
 	}
 	
-	public void changeArea1State() {
-		area1 = !area1;
-		Log.i("fff", "area1="+area1);
-	}
-	
-	public void changeArea2State() {
-		area2 = !area2;
-		Log.i("fff", "area2="+area2);
-	}
-
-	public void changeArea3State() {
-		area3 = !area3;
-		Log.i("fff", "area3="+area3);
-	}
-	
 	public void setContentLayout(ScrollView layout) {
 		contentLayout = layout;
 	}
@@ -420,14 +390,15 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	}
 	
 	public void setMatrixZoomIn() {
-		matrix.postScale(2, 2);
+		matrix.postScale(1.04f, 1.04f);
 	}
 	
 	public void setMatrixZoomOut() {
-		matrix.postScale(0.5f, 0.5f);
+		matrix.postScale(0.96f, 0.96f);
 	}
 	public void setZoom(int x) {
 		//x傳入的值範圍1~10
+
 		zoom = 11-x;
 	}
 	public void setButtonStatusList(LinkedList<ButtonStatus> list) {

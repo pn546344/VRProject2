@@ -64,6 +64,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 	LinkedList<ButtonStatus> buttonlist = new LinkedList<ButtonStatus>(); //ÄÝ©ÊÄæbuttonªºª¬ºA
 	LinkedList<PropertyData> propertyList = new LinkedList<PropertyData>();
+	private int zoom = 0;
 	private boolean is_exit = false;
 	private boolean area1Close = false , area2Close = false , area3Close = false;
 	float upX , upY , downX , downY;
@@ -319,8 +320,31 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
 		// TODO Auto-generated method stub
 		TextView tv = (TextView)findViewById(R.id.textView7);
-		if(arg1 == 0)
+	/*	if(zoom>arg1 && arg1 == 0)
+		{
 			arg1 = 1;
+			tView.setMatrixZoomOut();
+			Log.i("ttt", "zoom up");
+		}*/
+		
+		if (zoom<arg1) {
+			for (int i = 0; i < arg1-zoom; i++) {
+				tView.setMatrixZoomOut();//ÁY¤p 
+			}
+			 
+			Log.i("ttt", "zoom <arg1");
+		}else if (zoom>arg1) {
+			for (int i = 0; i < zoom-arg1; i++) {
+				tView.setMatrixZoomIn();
+			}
+			
+			Log.i("ttt", "zoom >arg1");
+		}
+		zoom = arg1;
+		Log.i("ttt", "zoom = "+zoom);
+		if (arg1 == 0) {
+			tv.setText(100+"M");
+		}else
 		tv.setText(arg1*100+"M");
 		tView.setZoom(arg1);
 	}
