@@ -1,22 +1,25 @@
 package com.mustcsie.vrproject2;
 
+import android.graphics.Bitmap;
+
 public class PropertyData {
-	private String name="" ,onUrl = "", offUrl ="";
-	public PropertyData(String name,String on,String off)
+	private String name="" ;
+	private Bitmap onBitmap,offBitmap;
+	public PropertyData(String name,Bitmap onBitmap,Bitmap offBitmap)
 	{
 		this.name = name;
-		onUrl = on;
-		offUrl = off;
+		this.onBitmap = onBitmap;
+		this.offBitmap = offBitmap;
 	}
 	public String getName() {
 		return name;
 	}
 	
-	public String getOnUrl() {
-		return onUrl;
+	public Bitmap getOnBitmap() {
+		return onBitmap;
 	}
 	
-	public String getOffUrl() {
-		return name;
+	public Bitmap getOffBitmap() {
+		return offBitmap;
 	}
 }

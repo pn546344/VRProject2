@@ -9,14 +9,16 @@ public class TagData implements Serializable{
 	String name , content;     		//名子,內容
 	double latitude=0,longitude=0;  //緯度 ,經度
 	Bitmap image;					//物件的照片
+	String[] str;
 	
-	public TagData(String name , String content , double latitude , double longitude ,Bitmap bitmap)
+	public TagData(String name , String content , double latitude , double longitude ,Bitmap bitmap,String[] str)
 	{
 		this.name = name;
 		this.content = content;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.image = bitmap;
+		this.str = str;
 	}
 	public Bitmap getImage() {
 		return image;
@@ -32,6 +34,10 @@ public class TagData implements Serializable{
 	
 	public String getName() {
 		return name;
+	}
+	
+	public String[] getStr() {
+		return str;  //屬性
 	}
 	
 	

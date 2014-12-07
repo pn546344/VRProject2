@@ -12,6 +12,8 @@ import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import com.google.android.gms.internal.bu;
+
 import android.R.animator;
 import android.accounts.Account;
 import android.app.Activity;
@@ -21,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -28,15 +31,18 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.MonthDisplayHelper;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -54,8 +60,9 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	CameraView cView;
 	TagView tView;
 	TextView tvContent , tvName , tvClass;
-	ImageView im,backProperty , closeimage ;
+	ImageView im,backProperty , closeimage;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
+	LinkedList<Boolean> buttonlist = new LinkedList<Boolean>(); //屬性欄button的狀態
 	LinkedList<PropertyData> propertyList = new LinkedList<PropertyData>();
 	private boolean is_exit = false;
 	private boolean area1Close = false , area2Close = false , area3Close = false;
@@ -63,6 +70,9 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	SeekBar seekBar;
 	ScrollView propertyView ;
 	LinearLayout propertyLinearView;
+	
+	
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +117,6 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		closeimage.setOnClickListener(this);
 		
 		
-		
-		
-		
 		Intent intent = getIntent();
 		bigPoint = intent.getStringExtra("BigPoint");  //取得大項的名稱
 		GetSmallJson sJson = new GetSmallJson(bigPoint);
@@ -130,15 +137,33 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 			TextView abc = new TextView(this);
 			abc.setText(propertyList.get(i).getName());
 			abc.setTextSize(20);
-			ImageButton ibutton = new ImageButton(this);
-			String url = propertyList.get(i).getOnUrl();
-//			SmallBitmap pBitmap = new SmallBitmap(url);
-			ibutton.setImageResource(R.drawable.logo);
-//			ibutton.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
-//			ibutton.setImageBitmap(pBitmap.getBitmap());
+			final ImageView ibutton = new ImageView(this);
+			ibutton.setImageBitmap(propertyList.get(i).getOnBitmap());
+			buttonlist.add(true);
+			ibutton.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
 			ibutton.setAdjustViewBounds(true);
-			ibutton.setMaxHeight(300);
-			ibutton.setMaxWidth(300);
+			ibutton.setMaxHeight(200);
+			ibutton.setMaxWidth(200);
+			ibutton.setId(i);
+			ibutton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Log.i("ttt", "id = "+v.getId());
+					if (buttonlist.get(v.getId()) == true) {
+						ibutton.setImageBitmap(propertyList.get(v.getId()).getOffBitmap());
+						buttonlist.set(v.getId(), false);
+					}
+					else
+					{
+						ibutton.setImageBitmap(propertyList.get(v.getId()).getOnBitmap());
+						buttonlist.set(v.getId(), true);
+					}
+					
+				}
+			});
+			Log.i("fff", "ibutton id = "+ibutton.getId());
 			propertyLinearView.addView(abc);
 			propertyLinearView.addView(ibutton);
 				
@@ -193,8 +218,19 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		case R.id.imageView5:
 			tView.closeTextContent();
 			break;
+			
+		/*case 0:
+			Log.i("fff", "按下0");
+			break;
+			
+		case 1:
+			Log.i("fff", "按下0");
+			break;
+			
+		case 2:
+			Log.i("fff", "按下0");
+			break;*/
 		}
-		
 	}
 	
 	@Override
@@ -307,6 +343,38 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		// 當SeekBar被使用者停止調整時,此方法會被執行
 		
 	}
+	public class MyAdapter extends BaseAdapter
+	{
+		private LayoutInflater myInflater;
+		public MyAdapter(Context c) {
 	
+			myInflater = LayoutInflater.from(c);
+		}
+		
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
 
 }

@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 public class GetPropertyJson extends Thread{
@@ -61,8 +62,14 @@ public class GetPropertyJson extends Thread{
 						name = json.getString("Tag_Name");
 						Log.d("ttt", "name ="+name);
 						onUrl = json.getString("Tag_Image1");
+						SmallBitmap sBitmap = new SmallBitmap(onUrl);
+						Bitmap onBitmap = sBitmap.getBitmap();
+						
 						offUrl = json.getString("Tag_Image2");
-						PropertyData pData = new PropertyData(name, onUrl, offUrl);
+						SmallBitmap ofBitmap = new SmallBitmap(offUrl);
+						Bitmap offBitmap = ofBitmap.getBitmap();
+						
+						PropertyData pData = new PropertyData(name, onBitmap, offBitmap);
 						dataList.add(pData);
 					
 				}

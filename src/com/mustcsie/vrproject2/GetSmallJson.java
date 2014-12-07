@@ -14,18 +14,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.android.gms.internal.gj;
+
 import android.graphics.Bitmap;
 import android.util.Log;
 
 public class GetSmallJson extends Thread{
 
-	String result="",address=null , getData;
+	String result="",address=null , getData , address2 = null;
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 	public GetSmallJson(String url) {
 		getData = url;
 		try {
 			getData	= URLEncoder.encode(getData,"utf-8");  //解決get傳送中文的問題
 			address = "http://120.105.81.47/login/small_android.php?viewname="+getData;
+			address2 = "http://120.105.81.47/login/device_tag_android.php?viewname="+getData;
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,7 +71,13 @@ public class GetSmallJson extends Thread{
 					longitude 	= 	json.getDouble("Device_Longitude");
 					SmallBitmap sBitmap = new SmallBitmap(json.getString("Device_Images"));
 					bitmap = sBitmap.getBitmap();
-					TagData tData = new TagData(name, content, latitude, longitude, bitmap);
+					
+					GetTagJson gJson = new GetTagJson(address2, getData, name);
+					gJson.start();
+					gJson.join();
+					String[] list = gJson.getList();
+					
+					TagData tData = new TagData(name, content, latitude, longitude, bitmap,list);
 					dataList.add(tData);
 					Log.i("ttt", "datalist now is = "+dataList.size());
 					Log.i("fff", "Device_Name = "+name+"url = "+json.getString("Device_Images"));
@@ -90,6 +99,9 @@ public class GetSmallJson extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Log.i("ttt", "Json");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		super.run();
 	}

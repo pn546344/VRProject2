@@ -62,7 +62,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private float senserAngleData=0;
 	private Location loc = new Location("");
 	private Location myLoc = new Location("");
-	private LinkedList<TagDetail> tagDetailList = new LinkedList<TagDetail>();
+	private LinkedList<TagDetail> tagDetailList = new LinkedList<TagDetail>(); //目標在螢幕上的位置
+	private LinkedList<DeviceTagData> deviceTag = new LinkedList<DeviceTagData>(); //tag的屬性
 	private ScrollView contentLayout;
 	private TextView tv , tvName , tvClass;    //tv是景點內容的標籤 , tvName是景點名稱 , tvClass是景點類別
 	final AlphaAnimation alphaAnimation = new AlphaAnimation(0.0f, 1.0f);
@@ -154,13 +155,20 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 					str = dataList.get(i).getContent();		//抓取按下目標的內容文字
 					String str1 = "";
 					str1 = dataList.get(i).getName();
-//					String strClass="" ;
-//					strClass = dataList.get(i).getArea();
-					
+					String[] strClass ;
+					strClass = dataList.get(i).getStr();
+					String classname ="";
+					for (int j = 0; j < strClass.length; j++) {
+						if (classname.equals("")) {
+							classname = strClass[j];
+						}
+						else
+						classname = classname+","+strClass[j];
+					}
 					
 					tv.setText(str);  //設定簡介文字
 					tvName.setText(str1);
-//					tvClass.setText(strClass);
+					tvClass.setText(classname);
 					alphaAnimation.setDuration(1000);
 					contentLayout.startAnimation(alphaAnimation);
 					contentLayout.setVisibility(View.VISIBLE);
@@ -173,7 +181,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		}
 		return super.onTouchEvent(event);
 	}
-	
+	//設定TagDataList的資料
 	public void setTagDataList(LinkedList<TagData> dataList) {
 		this.dataList = dataList;
 	}
