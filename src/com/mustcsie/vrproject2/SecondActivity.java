@@ -43,6 +43,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
+import android.widget.Gallery;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -70,9 +71,8 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	float upX , upY , downX , downY;
 	SeekBar seekBar;
 	ScrollView propertyView ;
-	LinearLayout propertyLinearView;
-	
-	
+	LinearLayout propertyLinearView , smallPhoto;
+	ImageView itemPhoto1 , itemPhoto2 ;
 
 	
 	@Override
@@ -103,7 +103,9 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		seekBar = (SeekBar)findViewById(R.id.seekBar1);
 		propertyView = (ScrollView)findViewById(R.id.scrollView1); //屬性視窗變數
 		propertyLinearView = (LinearLayout)findViewById(R.id.propertyLayout);
-		
+		smallPhoto = (LinearLayout)findViewById(R.id.smallPhoto);
+		itemPhoto1 = (ImageView)findViewById(R.id.itemPhoto1);
+		itemPhoto2 = (ImageView)findViewById(R.id.itemPhoto2);
 		
 		ScrollView lLayout = (ScrollView)findViewById(R.id.myLayout);
 		lLayout.setVisibility(View.GONE);
@@ -111,6 +113,8 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		tView.setTextContent(tvContent);
 		tView.setTextName(tvName);
 		tView.setTextClass(tvClass);
+		tView.setItemPhoto1(itemPhoto1);
+		tView.setItemPhoto2(itemPhoto2);
 		seekBar.setOnSeekBarChangeListener(this);
 		propertyView.setVisibility(View.GONE);
 		
@@ -120,6 +124,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		
 		Intent intent = getIntent();
 		bigPoint = intent.getStringExtra("BigPoint");  //取得大項的名稱
+		tView.setBigPoint(bigPoint);
 		GetSmallJson sJson = new GetSmallJson(bigPoint);
 		GetPropertyJson propertyJson = new GetPropertyJson(bigPoint);
 		propertyJson.start();
@@ -183,6 +188,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
         tView.setScanWidth(metrics.widthPixels); 		//將螢幕寬傳遞給tView
         
 		tView.setButtonStatusList(buttonlist);
+		tView.setSmallPhoto(smallPhoto);
 		
 	}
 	
@@ -360,38 +366,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 		// 當SeekBar被使用者停止調整時,此方法會被執行
 		
 	}
-	public class MyAdapter extends BaseAdapter
-	{
-		private LayoutInflater myInflater;
-		public MyAdapter(Context c) {
 	
-			myInflater = LayoutInflater.from(c);
-		}
 		
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public Object getItem(int position) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	}
 
 }

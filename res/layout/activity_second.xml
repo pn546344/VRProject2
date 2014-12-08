@@ -161,23 +161,36 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:layout_height="match_parent" >
 
-                <Gallery
-                    android:id="@+id/gallery1"
+                <LinearLayout
+                    android:id="@+id/smallPhoto"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
 
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/itemPhoto1"
+                        android:layout_width="300dp"
+                        android:layout_height="200dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        
+                        />
 
-            <VideoView
-                android:id="@+id/videoView1"
-                android:layout_width="400sp"
-                android:layout_height="250sp"
-                android:layout_gravity="center" />
+                    <ImageView
+                        android:id="@+id/itemPhoto2"
+                        android:layout_width="300dp"
+                        android:layout_height="200dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        />
+
+                </LinearLayout>
+            </HorizontalScrollView>
 
         </LinearLayout>
     </ScrollView>

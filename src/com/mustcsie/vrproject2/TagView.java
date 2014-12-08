@@ -1,7 +1,23 @@
 package com.mustcsie.vrproject2;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.android.gms.internal.bu;
 import com.google.android.gms.internal.ho;
@@ -23,6 +39,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,15 +51,20 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.BaseAdapter;
+import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 
 public class TagView extends SurfaceView implements	Runnable, LocationListener, SensorEventListener{
 
@@ -73,6 +95,21 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private Matrix matrix = new Matrix();
 	private float startSensor = 0.0f;
 	private int zoom = 10;
+	private LinearLayout smallPhoto;
+	private String bigPoint = "";
+	private ImageView itemPhoto1 , itemPhoto2;
+	Bitmap bitmap1, bitmap2;
+	
+	Handler handler = new Handler(){
+		public void handleMessage(Message msg) {
+			if (msg.what == 1) {
+				itemPhoto1.setImageBitmap(bitmap1);
+			}
+			if (msg.what == 2) {
+				itemPhoto2.setImageBitmap(bitmap2);
+			}
+		};
+	};
 	
 	public TagView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -152,6 +189,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 						(y>tagDetailList.get(i).getY0() && y < tagDetailList.get(i).getY1())
 						&& tagDetailList.get(i).getIsSurvival() && contentLayoutState != true)
 				{
+					itemPhoto1.setImageResource(R.drawable.wait);
+					itemPhoto2.setImageResource(R.drawable.wait);
 					Log.i("fff", "tagDetailList ID ="+tagDetailList.get(i).getId());
 					String str="";
 					str = dataList.get(i).getContent();		//抓取按下目標的內容文字
@@ -176,6 +215,22 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 					contentLayout.setVisibility(View.VISIBLE);
 					contentLayoutState = true;
 					
+					
+					GetItemPhoto2 itemPhoto = new GetItemPhoto2(bigPoint, str1);
+					itemPhoto.start();
+					
+					
+//					LinkedList<Bitmap> dataList = new LinkedList<Bitmap>();
+//					dataList = itemPhoto.getList()	;
+//					Log.i("ttt", "dataList abcdee size = "+dataList.size());
+//					itemPhoto1.setImageBitmap(dataList.getFirst());
+//					itemPhoto2.setImageBitmap(dataList.getLast());
+//					Log.d("ttt", "error");
+					
+					
+					
+					
+				    
 				}
 			}
 			break;
@@ -188,7 +243,6 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		this.dataList = dataList;
 	}
 	
-
 	
 	@Override
 	public void run() {
@@ -405,5 +459,101 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		buttonStatus = list;
 		Log.d("ttt","change");
 	}
+	
+	public void setSmallPhoto(LinearLayout smallPhoto) {
+		this.smallPhoto = smallPhoto;
+	}
+	
+	public void setBigPoint(String bigPoint) {
+		this.bigPoint = bigPoint;
+	}
+	
+	public void setItemPhoto1(ImageView item) {
+		itemPhoto1 = item;
+	}
+	
+	public void setItemPhoto2(ImageView item) {
+		itemPhoto2 = item;
+	}
+	
+	public class GetItemPhoto2 extends Thread{
+		private String address = "";
+		private String result = "";
+		private LinkedList<Bitmap> dataList = new LinkedList<Bitmap>();
+		public GetItemPhoto2(String viewname , String devicename)
+		{
+			try {
+				viewname = URLEncoder.encode(viewname,"utf-8");
+				devicename = URLEncoder.encode(devicename,"utf-8");
+				address = "http://120.105.81.47/login/device_picture.php?viewname="+viewname+"&devicename="+devicename;
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			try {
+				URL url = new URL(address);
+				HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+				if(connection.getResponseCode()==HttpURLConnection.HTTP_OK)
+				{
+					BufferedReader reader = new BufferedReader(
+							new InputStreamReader(connection.getInputStream(), "utf-8"));
+					String str;
+					while((str=reader.readLine())!=null)
+					{
+						result = result +str;
+					}
+					reader.close();
+					connection.disconnect();
+					JSONArray jsonArray = new JSONArray(result);
+					Log.d("ttt", "jsonarray.length ===="+jsonArray.length());
+					for(int i=0;i<jsonArray.length();i++)
+					{
+							JSONObject json = jsonArray.getJSONObject(i);
+							String name , pic1Url,pic2Url;
+							pic1Url = json.getString("Device_Picture1");
+							SmallBitmap sBitmap = new SmallBitmap(pic1Url);
+							Bitmap onBitmap = sBitmap.getBitmap();
+							bitmap1= sBitmap.getBitmap();
+							Message msg = handler.obtainMessage();
+							msg.what = 1;
+							handler.sendMessage(msg);
+							pic2Url = json.getString("Device_Picture2");
+							SmallBitmap ofBitmap = new SmallBitmap(pic2Url);
+							Bitmap offBitmap = ofBitmap.getBitmap();
+							bitmap2= ofBitmap.getBitmap();
+							Message msg2 = handler.obtainMessage();
+							msg2.what = 2;
+							handler.sendMessage(msg2);
+							dataList.add(onBitmap);
+							dataList.add(offBitmap);
+							Log.d("ttt", "datalist add 2");
+					}
+				}
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Log.d("ttt", "datalist add 3");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Log.d("ttt", "datalist add 4");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Log.d("ttt", "datalist add 5");
+			}
+			super.run();
+		}
+		
+		public LinkedList<Bitmap> getList() {
+			return dataList	;
+		}
+	}
+	
 }
 
