@@ -65,7 +65,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	LinkedList<TagData> dataList = new LinkedList<TagData>();
 	LinkedList<ButtonStatus> buttonlist = new LinkedList<ButtonStatus>(); //屬性欄button的狀態
 	LinkedList<PropertyData> propertyList = new LinkedList<PropertyData>();
-	private int zoom = 0;
+	private int zoom = 0 , beforeZoom = 0;
 	private boolean is_exit = false;
 	private boolean area1Close = false , area2Close = false , area3Close = false;
 	float upX , upY , downX , downY;
@@ -326,26 +326,7 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
 		// TODO Auto-generated method stub
 		TextView tv = (TextView)findViewById(R.id.textView7);
-	/*	if(zoom>arg1 && arg1 == 0)
-		{
-			arg1 = 1;
-			tView.setMatrixZoomOut();
-			Log.i("ttt", "zoom up");
-		}*/
-		
-		if (zoom<arg1) {
-			for (int i = 0; i < arg1-zoom; i++) {
-				tView.setMatrixZoomOut();//縮小 
-			}
-			 
-			Log.i("ttt", "zoom <arg1");
-		}else if (zoom>arg1) {
-			for (int i = 0; i < zoom-arg1; i++) {
-				tView.setMatrixZoomIn();
-			}
-			
-			Log.i("ttt", "zoom >arg1");
-		}
+	
 		zoom = arg1;
 		Log.i("ttt", "zoom = "+zoom);
 		if (arg1 == 0) {
@@ -358,13 +339,19 @@ public class SecondActivity extends Activity implements OnClickListener, OnSeekB
 	@Override
 	public void onStartTrackingTouch(SeekBar arg0) {
 		// 當SeekBar被使用者點選做調整時,此方法會被執行
-		
+		Log.i("aaa", "onStartTrackingTouch");
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar arg0) {
 		// 當SeekBar被使用者停止調整時,此方法會被執行
-		
+		Log.i("aaa", "onStopTrackingTouch");
+		if (beforeZoom < zoom) {
+			tView.setMatrixZoomOut(zoom-beforeZoom);//縮小
+		}else if (beforeZoom>zoom) {
+				tView.setMatrixZoomIn(beforeZoom-zoom);
+		}
+		beforeZoom = zoom;
 	}
 	
 		

@@ -1,8 +1,11 @@
 package com.mustcsie.vrproject2;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -41,6 +44,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -97,16 +101,16 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	private int zoom = 10;
 	private LinearLayout smallPhoto;
 	private String bigPoint = "";
-	private ImageView itemPhoto1 , itemPhoto2;
-	Bitmap bitmap1, bitmap2;
+	private ImageView itemPhoto1 , itemPhoto2;  //icon簡介的圖
 	
 	Handler handler = new Handler(){
 		public void handleMessage(Message msg) {
 			if (msg.what == 1) {
-				itemPhoto1.setImageBitmap(bitmap1);
+				itemPhoto1.setImageBitmap((Bitmap)msg.obj);
+				
 			}
 			if (msg.what == 2) {
-				itemPhoto2.setImageBitmap(bitmap2);
+				itemPhoto2.setImageBitmap((Bitmap)msg.obj);
 			}
 		};
 	};
@@ -142,8 +146,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 
 	private void showLocation(Location loc) {
 		// TODO Auto-generated method stub
-		latiude = loc.getLatitude();
-		longitude = loc.getLongitude();
+//		latiude = loc.getLatitude();
+//		longitude = loc.getLongitude();
 //		myLoc.setLatitude(latiude);
 //		myLoc.setLongitude(longitude);
 		myLoc.setLatitude(24.863918);
@@ -213,22 +217,12 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 					alphaAnimation.setDuration(1000);
 					contentLayout.startAnimation(alphaAnimation);
 					contentLayout.setVisibility(View.VISIBLE);
+					
 					contentLayoutState = true;
 					
 					
 					GetItemPhoto2 itemPhoto = new GetItemPhoto2(bigPoint, str1);
 					itemPhoto.start();
-					
-					
-//					LinkedList<Bitmap> dataList = new LinkedList<Bitmap>();
-//					dataList = itemPhoto.getList()	;
-//					Log.i("ttt", "dataList abcdee size = "+dataList.size());
-//					itemPhoto1.setImageBitmap(dataList.getFirst());
-//					itemPhoto2.setImageBitmap(dataList.getLast());
-//					Log.d("ttt", "error");
-					
-					
-					
 					
 				    
 				}
@@ -271,6 +265,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			{
 				tag = dataList.get(i);
 				String[] property = tag.getStr();
+				Log.i("ttt", "Str size"+property.length);
 				boolean jump = false;
 				for (int j = 0 , k = 0; j < buttonStatus.size(); j++) {
 					for (int j2 = 0; j2 < property.length; j2++) {
@@ -307,12 +302,12 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				*/
 				if(angle > 180 )		
 					angle -= 360;    
-				canvas.drawBitmap(tagImage, (float) (scanWidth/2-angle*10),-(dest-1080),null); //畫logo
+				canvas.drawBitmap(tagImage, (float) (scanWidth/2-angle*10),(float)(-(dest-scanHeight)),null); //畫logo
 				
 				float x = tagImage.getWidth();
 				float y = tagImage.getHeight();
 				TagDetail tagDetail = new TagDetail(i, (float) (scanWidth/2-angle*10),
-						(float) (scanWidth/2-angle*10)+x, -(dest-1080), -(dest-1080)+y);
+						(float) (scanWidth/2-angle*10)+x, (float)(-(dest-scanHeight)), (float)(-(dest-scanHeight)+y));
 				
 				if(tagDetailList.size()<=dataList.size()){
 					tagDetailList.add(tagDetail);
@@ -321,8 +316,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				{
 					tagDetailList.get(i).setX0((float) (scanWidth/2-angle*10));
 					tagDetailList.get(i).setX1((float) (scanWidth/2-angle*10)+x);
-					tagDetailList.get(i).setY0(-(dest-1080));
-					tagDetailList.get(i).setY1(-(dest-1080)+y);
+					tagDetailList.get(i).setY0((float)(-(dest-scanHeight)));
+					tagDetailList.get(i).setY1((float)(-(dest-scanHeight)+y));
 					tagDetailList.get(i).setIsSurvival(true);
 				}
 				
@@ -443,12 +438,18 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		this.tvClass = tvClass;
 	}
 	
-	public void setMatrixZoomIn() {
-		matrix.postScale(1.04f, 1.04f);
+	public void setMatrixZoomIn(int loop) {
+		for (int i = 0; i < loop; i++) {
+			
+			matrix.postScale(1.04f, 1.04f);
+		}
 	}
 	
-	public void setMatrixZoomOut() {
-		matrix.postScale(0.96f, 0.96f);
+	public void setMatrixZoomOut(int loop) {
+		for (int i = 0; i < loop; i++) {
+			matrix.postScale(0.96f, 0.96f);
+			
+		}
 	}
 	public void setZoom(int x) {
 		//x傳入的值範圍1~10
@@ -479,7 +480,6 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 	public class GetItemPhoto2 extends Thread{
 		private String address = "";
 		private String result = "";
-		private LinkedList<Bitmap> dataList = new LinkedList<Bitmap>();
 		public GetItemPhoto2(String viewname , String devicename)
 		{
 			try {
@@ -517,20 +517,19 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 							String name , pic1Url,pic2Url;
 							pic1Url = json.getString("Device_Picture1");
 							SmallBitmap sBitmap = new SmallBitmap(pic1Url);
-							Bitmap onBitmap = sBitmap.getBitmap();
-							bitmap1= sBitmap.getBitmap();
+							
 							Message msg = handler.obtainMessage();
 							msg.what = 1;
+							msg.obj = sBitmap.getBitmap();
 							handler.sendMessage(msg);
+							
 							pic2Url = json.getString("Device_Picture2");
 							SmallBitmap ofBitmap = new SmallBitmap(pic2Url);
-							Bitmap offBitmap = ofBitmap.getBitmap();
-							bitmap2= ofBitmap.getBitmap();
 							Message msg2 = handler.obtainMessage();
 							msg2.what = 2;
+							msg2.obj = ofBitmap.getBitmap();
 							handler.sendMessage(msg2);
-							dataList.add(onBitmap);
-							dataList.add(offBitmap);
+							
 							Log.d("ttt", "datalist add 2");
 					}
 				}
@@ -548,10 +547,6 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				Log.d("ttt", "datalist add 5");
 			}
 			super.run();
-		}
-		
-		public LinkedList<Bitmap> getList() {
-			return dataList	;
 		}
 	}
 	
