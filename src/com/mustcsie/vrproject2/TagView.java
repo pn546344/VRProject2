@@ -365,7 +365,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 				result = (degree - startSensor)*-1;
 			}else
 				result = degree - startSensor;
-			   if (result > 15) {  
+			   if (result > 30) {  
 				//如果晃動沒有超過30度,不動作
 				   startSensor = arg0.values[0]	;
 			   }else

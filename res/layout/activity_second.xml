@@ -83,12 +83,13 @@
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:layout_marginTop="15dp"
-        android:background="@drawable/BK2" >
+         >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:background="#FFFFFF" >
 
             <LinearLayout
                 android:layout_width="match_parent"

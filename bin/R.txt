@@ -99,11 +99,12 @@ int drawable ic_plusone_medium_off_client 0x7f020024
 int drawable ic_plusone_small_off_client 0x7f020025
 int drawable ic_plusone_standard_off_client 0x7f020026
 int drawable ic_plusone_tall_off_client 0x7f020027
-int drawable logo 0x7f020028
-int drawable no 0x7f020029
-int drawable powered_by_google_dark 0x7f02002a
-int drawable powered_by_google_light 0x7f02002b
-int drawable wait 0x7f02002c
+int drawable icon2 0x7f020028
+int drawable logo 0x7f020029
+int drawable no 0x7f02002a
+int drawable powered_by_google_dark 0x7f02002b
+int drawable powered_by_google_light 0x7f02002c
+int drawable wait 0x7f02002d
 int id FrameLayout1 0x7f070014
 int id action_settings 0x7f07002b
 int id book_now 0x7f070010
