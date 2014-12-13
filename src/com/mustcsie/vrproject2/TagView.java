@@ -134,8 +134,8 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		if(bestGPS != null){
 			Location loc = lManager.getLastKnownLocation(bestGPS);
 			showLocation(loc);
-			lManager.requestLocationUpdates(bestGPS, 10000, 100, this);
-			//用bestGPS定位方法,10秒鐘定位一次 , 或超過100公尺定位一次 
+			lManager.requestLocationUpdates(bestGPS, 1000, 5, this);
+			//用bestGPS定位方法,1秒鐘定位一次 , 或超過5公尺定位一次 
 		}
 		
 		sm = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
@@ -146,12 +146,12 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 
 	private void showLocation(Location loc) {
 		// TODO Auto-generated method stub
-//		latiude = loc.getLatitude();
-//		longitude = loc.getLongitude();
-//		myLoc.setLatitude(latiude);
-//		myLoc.setLongitude(longitude);
-		myLoc.setLatitude(24.863918);
-		myLoc.setLongitude(120.988015);
+		latiude = loc.getLatitude();
+		longitude = loc.getLongitude();
+		myLoc.setLatitude(latiude);
+		myLoc.setLongitude(longitude);
+//		myLoc.setLatitude(24.863918);			//位置寫死
+//		myLoc.setLongitude(120.988015);
 		Log.i("fff", "latiude ="+latiude);
 		Log.i("fff", "longitude ="+longitude);
 		
@@ -169,6 +169,7 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		while (!loopStop) {
 			try {
 				t.join();
+				lManager.removeUpdates(this);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -359,14 +360,16 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 		if (arg0.sensor.getType() == Sensor.TYPE_ORIENTATION) {
 			   float degree = arg0.values[0];
 			   float result = 0.0f;
-			   startSensor = degree;
+			   
 			   if (degree - startSensor < 0) {
 				result = (degree - startSensor)*-1;
 			}else
 				result = degree - startSensor;
-			//   if (result > 5) {  
+			   if (result > 15) {  
 				//如果晃動沒有超過30度,不動作
-			//	   startSensor = arg0.values[0]	;
+				   startSensor = arg0.values[0]	;
+			   }else
+				   startSensor = degree;
 			   if(senserAngleData != degree && (senserAngleData-degree<-30 || senserAngleData-degree>30))
 			   {
 				   
@@ -395,7 +398,9 @@ public class TagView extends SurfaceView implements	Runnable, LocationListener, 
 			   currentDegree = degree+90; // 保存旋轉後的度數, currentDegree是一個在類中定義的float類型變量
 			   if(currentDegree<=-360)
 				   currentDegree = currentDegree+360;
+			   
 			   }
+		
 	//	}
 	}
 	

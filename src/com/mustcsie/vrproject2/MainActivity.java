@@ -219,8 +219,8 @@ public class MainActivity extends Activity implements OnMyLocationChangeListener
 			   myLoc = map.getMyLocation();
 			   if ( myLoc != null) {
 				   //如果GPS不是空值
-//				   LatLng myLatLng = new LatLng(myLoc.getLatitude(), myLoc.getLongitude());
-				   LatLng myLatLng = new LatLng(24.863870, 120.988013);
+				   LatLng myLatLng = new LatLng(myLoc.getLatitude(), myLoc.getLongitude());
+//				   LatLng myLatLng = new LatLng(24.863870, 120.988013);
 				   cp = new CameraPosition(myLatLng, map.getCameraPosition().zoom, 0, currentDegree);
 				   map.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
 			   }
